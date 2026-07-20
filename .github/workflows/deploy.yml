@@ -1,0 +1,29 @@
+name: Deploy to droplet
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch: {} # allow manual runs from the Actions tab
+
+concurrency:
+  group: deploy-droplet
+  cancel-in-progress: false # never interrupt an in-flight deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          port: ${{ secrets.DROPLET_SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.DEPLOY_PATH }}"
+            git fetch --all
+            git reset --hard origin/master     # match the pushed commit exactly (.env is untracked, survives)
+            docker compose up -d --build
+            docker image prune -f

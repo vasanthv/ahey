@@ -1,0 +1,8 @@
+{
+	email {$LETSENCRYPT_EMAIL}
+}
+
+{$DOMAIN} {
+	# socket.io upgrades (websocket) are proxied transparently by Caddy v2.
+	reverse_proxy app:824
+}

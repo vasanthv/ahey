@@ -1,0 +1,69 @@
+services:
+  # ----------------------------------------------------------------------------
+  # Ahey app (Node/Express + socket.io signalling). Internal only; Caddy fronts it.
+  # ----------------------------------------------------------------------------
+  app:
+    build: .
+    restart: unless-stopped
+    expose:
+      - "824"
+    environment:
+      NODE_ENV: production
+      PORT: 824
+      DOMAIN: ${DOMAIN}
+      CORS_ORIGIN: https://${DOMAIN}
+      # TURN wiring — must match the coturn service below
+      TURN_HOST: ${DOMAIN}
+      TURN_SECRET: ${TURN_SECRET}
+      TURN_TTL: ${TURN_TTL:-86400}
+    networks:
+      - web
+
+  # ----------------------------------------------------------------------------
+  # Caddy reverse proxy — automatic HTTPS (Let's Encrypt) for the app domain.
+  # The issued cert is shared (read-only) with coturn for turns:// on 5349.
+  # ----------------------------------------------------------------------------
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    networks:
+      - web
+
+  # ----------------------------------------------------------------------------
+  # coturn TURN/STUN server. Uses host networking so WebRTC relay ports bind
+  # directly on the droplet (bridge networking mangles the UDP relay range).
+  # ----------------------------------------------------------------------------
+  coturn:
+    image: coturn/coturn:latest
+    restart: unless-stopped
+    network_mode: host
+    entrypoint: ["sh", "/entrypoint.sh"]
+    environment:
+      DOMAIN: ${DOMAIN}
+      EXTERNAL_IP: ${EXTERNAL_IP}
+      TURN_SECRET: ${TURN_SECRET}
+    volumes:
+      - ./coturn/turnserver.conf:/etc/coturn/turnserver.conf:ro
+      - ./coturn/entrypoint.sh:/entrypoint.sh:ro
+      - caddy_data:/caddy-data:ro
+    depends_on:
+      - caddy
+
+networks:
+  web:
+
+volumes:
+  caddy_data:
+  caddy_config:

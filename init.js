@@ -9,6 +9,7 @@ const app = express(); // Create an Express application
 const config = require("./server/config");
 const signallingServer = require("./server/signalling-server");
 const routes = require("./server/routes");
+const turn = require("./server/turn");
 
 // Get PORT from env variable else assign 3000 for development
 const PORT = config.PORT || 824;
@@ -16,6 +17,14 @@ const server = http.createServer(app); // Create HTTP server with Express app
 
 // Set EJS as the view engine for rendering templates
 app.set("view engine", "ejs");
+
+// Dynamically serve ICE server config with freshly-minted TURN credentials.
+// Registered before express.static so it overrides the static assets/ice-config.js.
+app.get("/ice-config.js", (req, res) => {
+	res.type("application/javascript");
+	res.set("Cache-Control", "no-store");
+	res.send(`window.ICE_SERVERS = ${JSON.stringify(turn.getIceServers())};`);
+});
 
 // Serve static files from Vue, assets, and www directories
 app.use(express.static(path.join(__dirname, "node_modules/vue/dist/")));
