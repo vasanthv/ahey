@@ -5,15 +5,14 @@
 <body>
   <div class="wrap">
     <%- include('header'); -%>
-    <h1>Ahey - a free video call app for the web.</h1>
+    <h1>Ahey - a free video chat app for the web.</h1>
     <div class="row">
       <p>
         Ahey is a frictionless, peer-to-peer video conferencing app you can use right in your browser - no sign-ups,
-        no downloads, no limits.
+        no downloads, 100% free.
       </p>
       <p>
-        Just share your room URL with friends and connect instantly. 100% free, embeddable on any webpage, and
-        ready to use.
+        Just share your room URL with friends and connect instantly.
       </p>
     </div>
 
@@ -23,7 +22,9 @@
         <input type="text" placeholder="room-id" class="flex-1" />
         <button onClick="onJoin()">Start</button>
       </div>
-      <div class="small light">Entering a room ID is optional - click "Start" to generate a random room.</div>
+      <div class="small light">Entering a room id is optional - click "Start" to generate a random room. Start the room id with "@" make it public and discoverable by others.</div>
+      <br />
+      <div><a href="/public">Find public rooms</a> to meet random people.</div>
     </div>
 
     <script type="text/javascript">

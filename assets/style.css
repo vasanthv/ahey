@@ -51,10 +51,9 @@ input[type="text"] {
 }
 footer {
 	margin: 1rem;
-}
-footer section {
-	margin: 1rem auto;
 	text-align: center;
+	font-size: 0.9rem;
+	opacity: 0.8;
 }
 footer a {
 	margin: 0px 0.5rem;
