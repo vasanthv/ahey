@@ -7,14 +7,17 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install --production
+# Install dependencies from the lockfile (reproducible, prod only)
+RUN npm ci --omit=dev
 
 # Copy the rest of the application code
-COPY . .
+COPY --chown=node:node . .
+
+# Drop root privileges
+USER node
 
 # Expose the port the app runs on
 EXPOSE 824
 
 # Start the application
-CMD ["npm", "start"] 
+CMD ["npm", "start"]
