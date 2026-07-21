@@ -4,36 +4,36 @@
 
 <body>
   <div class="wrap">
-    <br />
-    <div class="row title">Ahey - a free video call app for the web.</div>
+    <%- include('header'); -%>
+    <h1>Ahey - a free video call app for the web.</h1>
     <div class="row">
       <p>
         Ahey is a frictionless, peer-to-peer video conferencing app you can use right in your browser - no sign-ups,
         no downloads, no limits.
       </p>
       <p>
-        Just share your channel URL with friends and connect instantly. 100% free, embeddable on any webpage, and
+        Just share your room URL with friends and connect instantly. 100% free, embeddable on any webpage, and
         ready to use.
       </p>
     </div>
 
     <div class="row">
-      <div id="channelbox" class="flex">
-        <span class="perma-placeholder">/</span>
-        <input type="text" placeholder="channel-id" class="flex-1" />
+      <div id="roombox" class="flex">
+        <span class="domain">ahey.net/</span>
+        <input type="text" placeholder="room-id" class="flex-1" />
         <button onClick="onJoin()">Start</button>
       </div>
-      <div class="small light">Entering a channel ID is optional - click "Start" to generate a random channel.</div>
+      <div class="small light">Entering a room ID is optional - click "Start" to generate a random room.</div>
     </div>
 
     <script type="text/javascript">
-      const inputElement = document.querySelector("#channelbox input");
+      const inputElement = document.querySelector("#roombox input");
 
       function onJoin() {
-        let channelId = document.querySelector("#channelbox input").value;
-        if (!channelId) channelId = Math.random().toString(36).substr(2, 6);
+        let roomId = document.querySelector("#roombox input").value;
+        if (!roomId) roomId = Math.random().toString(36).substr(2, 6);
 
-        window.location.pathname = channelId;
+        window.location.pathname = roomId;
       }
 
       inputElement.addEventListener("keypress", function(e) {

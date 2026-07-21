@@ -5,14 +5,14 @@
 // eslint-disable-next-line no-unused-vars
 const App = Vue.createApp({
 	data() {
-		const channelId = window.location.pathname.substr(1);
+		const roomId = window.location.pathname.substr(1);
 		const searchParams = new URLSearchParams(window.location.search);
 
 		const name = searchParams.get("name");
 		const chatEnabled = searchParams.get("chat") !== "false";
 
 		return {
-			channelId,
+			roomId,
 			peerId: "",
 			userAgent: "",
 			audioDevices: [],
@@ -338,7 +338,7 @@ const App = Vue.createApp({
 		},
 
 		initiateCall() {
-			if (!this.channelId) return alert("Invalid channel id");
+			if (!this.roomId) return alert("Invalid room id");
 			if (!this.name) return alert("Please enter your name");
 			this.callInitiated = true;
 			this.showExtraControls - false;
@@ -353,9 +353,9 @@ const App = Vue.createApp({
 			}, 3500);
 		},
 		copyURL() {
-			navigator.clipboard.writeText(`${window.location.origin}/${this.channelId}`).then(
-				() => this.setToast("Channel URL copied 👍", "success"),
-				() => console.error("Unable to copy channel URL")
+			navigator.clipboard.writeText(`${window.location.origin}/${this.roomId}`).then(
+				() => this.setToast("Room URL copied 👍", "success"),
+				() => console.error("Unable to copy room URL")
 			);
 		},
 		toggleAudio() {

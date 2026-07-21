@@ -4,11 +4,11 @@ Ahey can be embedded in any webpage using an `<iframe>`.
 
 ## 📋 Embed Code Example
 
-Replace `your-channel-here` with the channel name you want to embed:
+Replace `your-room-here` with the room name you want to embed:
 
 ```html
 <iframe
-	src="https://ahey.ney/your-channel-here?name=John"
+	src="https://ahey.ney/your-room-here?name=John"
 	width="100%"
 	height="600"
 	style="border:0;"

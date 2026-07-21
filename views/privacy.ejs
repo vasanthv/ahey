@@ -4,119 +4,80 @@
 
 <body>
   <div class="wrap">
-    <div class="row"><a href="/" class="small light">&larr; Back to home</a></div>
-    <br />
-    <div class="row title">Privacy policy</div>
+    <%- include('header'); -%>
+    <h1>Privacy policy</h1>
 
-    <div class="row">
-      <p><strong>Effective Date:</strong> August 01, 2025<br /></p>
 
-      <h3>Our Privacy Promise</h3>
-      <p>
-        Ahey is built with privacy by design. We collect minimal data, store nothing permanently, and use no tracking
-        or cookies. Your calls are peer-to-peer, meaning your video and audio go directly between participants, not
-        through our servers.
-      </p>
+    <section>
 
-      <h3>What Information We Collect</h3>
+      <p class="italic">Last Updated: July 2026</p>
+
+      <h2>Overview</h2>
+      <p>At Ahey, we believe your privacy matters. This policy explains what information we collect, how we use it, and how we protect it. Since Ahey doesn't require accounts or logins, we collect very little personal data.</p>
+
+      <h2>What Information We Collect</h2>
       <ul>
-        <li><strong>Your name</strong> - You provide a display name when joining calls</li>
-        <li>
-          <strong>WebRTC connection data</strong> - Technical data needed to establish peer-to-peer connections (IP
-          addresses, connection details)
-        </li>
-        <li><strong>Access logs</strong> - Basic server logs for technical maintenance and security</li>
+        <li><strong>IP addresses:</strong> We collect your IP address temporarily to establish your peer-to-peer connection with other participants</li>
+        <li><strong>Device information:</strong> Basic technical information about your device and browser (used for the connection only)</li>
+        <li><strong>Call metadata:</strong> The room URL you visited and when you joined (not the content of your calls)</li>
+      </ul>
+      <p><strong>What we don't collect:</strong> We don't collect your name, email, phone number, or any personal identifying information unless you voluntarily share it during a call.</p>
+
+      <h2>How We Use Your Information</h2>
+      <p>We use the information we collect only to:</p>
+      <ul>
+        <li>Establish and maintain your peer-to-peer video connection</li>
+        <li>Keep our service running smoothly and fix technical problems</li>
+        <li>Monitor and improve service quality and performance</li>
+        <li>Comply with legal requirements</li>
+      </ul>
+      <p>We do not sell, rent, or share your information with third parties for marketing purposes.</p>
+
+      <h2>Call Content & Recording</h2>
+      <div class="highlight">
+        <strong>Your conversations are yours alone.</strong> Ahey does not record, store, or monitor the content of your calls. Your video and audio go directly between participants - they don't pass through our servers.
+      </div>
+      <p>If someone on your call records the conversation without permission, that's on them - not us. We have no way to access or prevent recordings made on users' devices.</p>
+
+      <h2>How Long We Keep Information</h2>
+      <ul>
+        <li><strong>Session data:</strong> Deleted automatically when your call ends</li>
+        <li><strong>Connection logs:</strong> Kept for 30 days for technical troubleshooting, then deleted</li>
+        <li><strong>Call content:</strong> Never stored (we have no access to it)</li>
       </ul>
 
-      <h3>How We Store Your Information</h3>
+      <h2>Cookies & Tracking</h2>
+      <p>Ahey does not use cookies or tracking pixels. We don't track your browsing history or follow you across websites.</p>
+
+      <h2>Security</h2>
+      <p>We take reasonable precautions to protect the information we collect. However, no online service is 100% secure. Since we collect minimal data and don't store call content, there's less for anyone to compromise.</p>
+
+      <h2>Third-Party Websites</h2>
+      <p>If Ahey is embedded on another website, that website's privacy policy applies to your data on their site. We're not responsible for third-party privacy practices. Always review the privacy policy of any website that embeds Ahey.</p>
+
+      <h2>Your Rights & Choices</h2>
       <ul>
-        <li><strong>Your name</strong> - Stored locally in your browser only, never sent to our servers</li>
-        <li>
-          <strong>WebRTC data</strong> - Temporarily stored on our servers only while you're connected to a channel
-        </li>
-        <li><strong>Access logs</strong> - Stored on our servers for 7 days, then automatically deleted</li>
+        <li><strong>No account = no data about you:</strong> Since we don't require sign-ups, we don't have a profile to access or delete</li>
+        <li><strong>Disable your camera/mic:</strong> You can turn off video and audio at any time during a call</li>
+        <li><strong>Browser settings:</strong> You can clear your browser data at any time</li>
+        <li><strong>Do Not Track:</strong> We respect browser Do Not Track requests</li>
       </ul>
 
-      <h3>When Data Gets Deleted</h3>
-      <ul>
-        <li><strong>Immediately</strong> - WebRTC connection data is deleted as soon as you leave a call</li>
-        <li><strong>7 days</strong> - Access logs are automatically deleted after 7 days</li>
-        <li>
-          <strong>When you clear browser data</strong> - Your stored name is deleted if you clear your browser's local
-          storage
-        </li>
-      </ul>
+      <h2>Children's Privacy</h2>
+      <p>Ahey is not intended for users under 18. We don't knowingly collect information from anyone under 18. Parents or guardians who believe a child has used Ahey should contact us.</p>
 
-      <h3>What We Don't Do</h3>
-      <ul>
-        <li><strong>No call recording</strong> - We never record, store, or monitor your video/audio calls</li>
-        <li><strong>No tracking</strong> - We don't use tracking pixels, or behavioral tracking</li>
-        <li><strong>No cookies</strong> - We don't set any cookies on your device</li>
-        <li><strong>No data selling</strong> - We never sell, rent, or share your information with third parties</li>
-        <li><strong>No permanent accounts</strong> - We don't create user profiles or store account information</li>
-      </ul>
+      <h2>Changes to This Policy</h2>
+      <p>We may update this privacy policy from time to time. If we make significant changes, we'll notify users. Your continued use of Ahey means you accept any changes to this policy.</p>
 
-      <h3>Third-Party Services</h3>
-      <p>Ahey uses minimal third-party services:</p>
-      <ul>
-        <li><strong>Domain hosting</strong> - Our domain and hosting providers may have their own logs</li>
-        <li><strong>STUN/TURN servers</strong> - Used to help establish peer-to-peer connections when needed</li>
-      </ul>
+      <h2>Contact Us</h2>
+      <p>If you have questions about this privacy policy or how we handle your information, please reach out to us.</p>
 
-      <h3>Embedded Calls</h3>
-      <p>When Ahey is embedded on other websites:</p>
-      <ul>
-        <li>The host website's privacy policy applies to their site</li>
-        <li>Ahey's privacy practices remain the same within the embedded frame</li>
-        <li>We don't share data with the host website</li>
-      </ul>
 
-      <h3>Open Source Transparency</h3>
-      <p>
-        Ahey is open source software. You can review our code, data practices, and privacy implementation at
-        <a href="https://github.com/vasanthv/ahey">https://github.com/vasanthv/ahey</a>.
-      </p>
+    </section>
 
-      <h3>Data Security</h3>
-      <ul>
-        <li><strong>Encrypted connections</strong> - All data is transmitted over HTTPS</li>
-        <li><strong>Peer-to-peer encryption</strong> - WebRTC provides built-in encryption for your calls</li>
-        <li><strong>Minimal attack surface</strong> - We store almost no data, so there's little to compromise</li>
-      </ul>
+    <hr />
 
-      <h3>Your Rights</h3>
-      <ul>
-        <li>
-          <strong>Access</strong> - You can see what name you've stored by checking your browser's local storage
-        </li>
-        <li><strong>Delete</strong> - Clear your browser data to remove your stored name</li>
-        <li><strong>Portability</strong> - Your name is stored locally and easily transferable</li>
-        <li><strong>No profiling</strong> - We don't create profiles, so there's nothing to correct or update</li>
-      </ul>
-
-      <h3>Children's Privacy</h3>
-      <p>
-        Ahey is intended for users 13 and older. We don't knowingly collect information from children under 13. If you
-        believe a child has used Ahey, please contact us.
-      </p>
-
-      <h3>International Users</h3>
-      <p>
-        Ahey works globally. Your WebRTC data may be processed in the country where our servers are located, but it's
-        deleted immediately when you leave calls.
-      </p>
-
-      <h3>Changes to This Policy</h3>
-      <p>
-        We may update this privacy policy. We'll post changes here and update the date above. Continued use means you
-        accept any changes.
-      </p>
-      ]
-      <hr />
-
-      <p><em>Privacy first. Always.</em></p>
-    </div>
-
+    <p><em>Privacy first. Always.</em></p>
     <%- include('footer'); -%>
   </div>
 </body>

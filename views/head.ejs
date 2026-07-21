@@ -17,9 +17,10 @@
   <link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml" />
   <link rel="manifest" href="/manifest.json" />
 
-  <link rel="stylesheet" href="/app.css" />
+  <link rel="stylesheet" href="/style.css" />
 
-  <% if(page==="channel" ) { %>
+  <% if(page==="room" ) { %>
+  <link rel="stylesheet" href="/app.css" />
   <script defer src="/socket.io/socket.io.js"></script>
   <script defer src="/vue.global.prod.js"></script>
   <script defer src="/ice-config.js"></script>

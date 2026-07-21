@@ -146,7 +146,7 @@ const cleanupAllPeers = () => {
 	App.cleanupScreenShare();
 };
 
-const joinChatChannel = (channel, userData) => signalingSocket.emit("join", { channel, userData });
+const joinChatRoom = (room, userData) => signalingSocket.emit("join", { room, userData });
 
 window.initiateCall = () => {
 	App.userAgent = navigator.userAgent;
@@ -158,9 +158,9 @@ window.initiateCall = () => {
 		const userData = { peerName: App.name, userAgent: App.userAgent };
 
 		if (App.localMediaStream) {
-			joinChatChannel(App.channelId, userData);
+			joinChatRoom(App.roomId, userData);
 		} else {
-			setupLocalMedia(() => joinChatChannel(App.channelId, userData));
+			setupLocalMedia(() => joinChatRoom(App.roomId, userData));
 		}
 	});
 
@@ -171,7 +171,7 @@ window.initiateCall = () => {
 		if (peer_id in App.peers) return;
 
 		const peerConnection = createPeerConnection();
-		App.peers[peer_id] = { ...App.peers[peer_id], data: config.channel[peer_id].userData };
+		App.peers[peer_id] = { ...App.peers[peer_id], data: config.room[peer_id].userData };
 		App.peers[peer_id]["rtc"] = peerConnection;
 
 		setupPeerConnectionHandlers(peerConnection, peer_id);

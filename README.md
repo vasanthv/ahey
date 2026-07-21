@@ -8,7 +8,7 @@ Ahey is built on WebRTC, enabling peer-to-peer video, audio, and text communicat
 
 - **No Sign-up Required:** Join or create video calls instantly without accounts or passwords.
 - **Peer-to-Peer WebRTC:** Low-latency direct streaming between participants.
-- **Unique Channel URLs:** Easily shareable links like `domain/channel-id`.
+- **Unique Room URLs:** Easily shareable links like `domain/room-id`.
 - **Embed Anywhere:** Embed calls on any website or app using an `<iframe>`.
 - **Free and Browser-Based:** 100% free, runs in modern browsers with no downloads.
 

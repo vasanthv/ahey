@@ -124,11 +124,11 @@ footer a {
 #toast.success {
 	background: var(--green);
 }
-#channelbox {
+#roombox {
 	position: relative;
 	margin-bottom: 0.5rem;
 }
-#channelbox .perma-placeholder {
+#roombox .perma-placeholder {
 	position: absolute;
 	left: 0px;
 	top: 0px;
@@ -136,13 +136,13 @@ footer a {
 	padding: calc(0.5rem + 2px) 1rem;
 	opacity: 0.5;
 }
-#channelbox input {
+#roombox input {
 	padding: 0.5rem 1rem;
 	padding-left: 5.3rem;
 	border: 2px solid var(--text);
 	border-radius: 0.5rem;
 }
-#channelbox button {
+#roombox button {
 	background-color: var(--text);
 	color: var(--background);
 	padding: 0.5rem 2rem;
