@@ -55,12 +55,9 @@
             <video v-bind:src-object.prop.camel="localMediaStream" autoplay muted playsinline></video>
             <div class="meta">{{name}} (You)</div>
           </div>
-          <div class="video" v-for="peer in peersArray" v-bind:key="peerKey">
+          <div v-bind:class="'video' + (peer.isTalking ? ' talking' : '')" v-for="peer in peersArray" v-bind:key="peerKey">
             <video v-bind:src-object.prop.camel="peer.stream" autoplay playsinline></video>
-            <div class="meta">
-              {{peer.name}}
-              <i v-bind:class="'green icon-mic'" v-if="peer.isTalking"></i>
-            </div>
+            <div class="meta">{{peer.name}}</div>
           </div>
           <div class="video empty" v-for="slot in emptySlots" v-bind:key="'empty' + slot"></div>
         </div>

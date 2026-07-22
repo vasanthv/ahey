@@ -198,8 +198,19 @@
 	border-radius: 0.25rem;
 	z-index: 5;
 }
-#videos .video .meta i.green {
-	color: var(--green);
+/* A ring marks whoever is talking. Drawn as an overlay so it sits above the
+   video and costs no layout when it appears. */
+#videos .video.talking::after {
+	content: "";
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	left: 0px;
+	border: 2px solid var(--green);
+	border-radius: inherit;
+	pointer-events: none;
+	z-index: 6;
 }
 /* ---------------------------------------------------------------
    In call controls.
