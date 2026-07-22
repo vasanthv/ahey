@@ -50,7 +50,7 @@
       </section>
 
       <section v-if="callInitiated">
-        <div id="videos" v-bind:class="videoLayoutClass">
+        <div id="videos">
           <div class="video self">
             <video v-bind:src-object.prop.camel="localMediaStream" autoplay muted playsinline></video>
             <div class="meta">{{name}} (You)</div>
@@ -62,47 +62,50 @@
               <i v-bind:class="'green icon-mic'" v-if="peer.isTalking"></i>
             </div>
           </div>
+          <div class="video empty" v-for="slot in emptySlots" v-bind:key="'empty' + slot"></div>
         </div>
 
         <div id="blanket" v-if="showExtraControls || showChat" @click="resetPopups"></div>
-        <section id="controls">
-          <section id="extra" v-if="showExtraControls">
-            <ul>
-              <li class="action" v-if="screenShareSupported" v-on:click="toggleScreenShare">
-                <i class="icon-screen"></i> Start screenshare
-              </li>
-              <li class="action" @click="copyURL"><i class="icon-link"></i> Copy room URL</li>
-              <li class="action red" @click="endCall"><i class="icon-phone-off"></i> Leave</li>
-            </ul>
-          </section>
-
-          <section id="chats" v-if="showChat">
-            <div id="scroll">
-              <div class="chat" v-for="(chat, i) in chats" v-bind:key="i">
-                <div><span class="name">{{chat.name}}:</span> <span v-html="linkify(chat.message)"></span></div>
-                <div class="date">{{formatDate(chat.date)}}</div>
-              </div>
-            </div>
-
-            <div class="chat composer">
-              <textarea v-model="chatMessage" rows="1" v-on:keydown.enter="sendChat" placeholder="Enter your message"></textarea>
-            </div>
-          </section>
-
-          <section id="buttons">
-            <button @click="toggleExtraControls"><i class="icon-more-vertical"></i></button>
-            <button v-bind:class="videoEnabled ? '' : 'off'" @click="toggleVideo">
+        <section id="extra" v-if="showExtraControls">
+          <ul>
+            <li v-bind:class="'action' + (videoEnabled ? '' : ' red')" @click="toggleVideo">
               <i :class="'icon-video'+(videoEnabled ? '' : '-off')"></i>
-            </button>
-            <button v-bind:class="audioEnabled ? '' : 'off'" @click="toggleAudio">
+              {{videoEnabled ? "Turn off camera" : "Turn on camera"}}
+            </li>
+            <li v-bind:class="'action' + (audioEnabled ? '' : ' red')" @click="toggleAudio">
               <i :class="'icon-mic'+(audioEnabled ? '' : '-off')"></i>
-            </button>
-            <button @click="toggleChat" v-if="chatEnabled"><i class="icon-chat"></i></button>
-            <button @click="toggleScreenShare" v-if="isScreenSharing" class="off">
-              <i class="icon-screen"></i>
-            </button>
-          </section>
+              {{audioEnabled ? "Mute mic" : "Unmute mic"}}
+            </li>
+            <li class="action" v-if="screenShareSupported" v-on:click="toggleScreenShare">
+              <i class="icon-screen"></i> Start screenshare
+            </li>
+            <li class="action" @click="copyURL"><i class="icon-link"></i> Copy room URL</li>
+            <li class="action red" @click="endCall"><i class="icon-phone-off"></i> Leave</li>
+          </ul>
         </section>
+
+        <section id="chats" v-if="showChat">
+          <div id="scroll">
+            <div class="chat" v-for="(chat, i) in chats" v-bind:key="i">
+              <div><span class="name">{{chat.name}}:</span> <span v-html="linkify(chat.message)"></span></div>
+              <div class="date">{{formatDate(chat.date)}}</div>
+            </div>
+          </div>
+
+          <div class="chat composer">
+            <textarea v-model="chatMessage" rows="1" v-on:keydown.enter="sendChat" placeholder="Enter your message"></textarea>
+          </div>
+        </section>
+
+        <button id="more-button" class="control" @click="toggleExtraControls">
+          <i class="icon-more-vertical"></i>
+        </button>
+        <button id="chat-button" class="control" v-if="chatEnabled" @click="toggleChat">
+          <i class="icon-chat"></i>
+        </button>
+        <button id="screenshare-button" class="control off" v-if="isScreenSharing" @click="toggleScreenShare">
+          <i class="icon-screen"></i>
+        </button>
       </section>
     </div>
   </main>

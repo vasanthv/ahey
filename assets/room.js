@@ -2,6 +2,9 @@
 
 "use strict";
 
+// Matches the signalling server's cap. The grid always shows this many tiles.
+const MAX_PARTICIPANTS = 4;
+
 // eslint-disable-next-line no-unused-vars
 const App = Vue.createApp({
 	data() {
@@ -47,11 +50,10 @@ const App = Vue.createApp({
 		screenShareSupported() {
 			return navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia;
 		},
-		videoLayoutClass() {
+		emptySlots() {
 			const totalParticipants = this.peersArray.length + 1; // +1 for self
 
-			// The signalling server caps a room at 4, so 4 is the widest layout.
-			return "layout-" + Math.min(totalParticipants, 4);
+			return Math.max(0, MAX_PARTICIPANTS - totalParticipants);
 		},
 	},
 	watch: {

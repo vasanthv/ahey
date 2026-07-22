@@ -152,34 +152,21 @@
 /* ---------------------------------------------------------------
    In call: full-width video grid.
    --------------------------------------------------------------- */
+/* Always four tiles: self takes the top left, empty seats hold their place. */
 #videos {
 	display: grid;
 	width: 100%;
-	height: calc(100vh - 5rem);
-	height: calc(100dvh - 5rem);
+	max-width: 1024px;
+	margin: 0px auto;
+	height: 100vh;
+	height: 100dvh;
 	padding: 0.5rem;
 	box-sizing: border-box;
 	gap: 0.5rem;
-	align-items: center;
-	justify-items: center;
-}
-#videos.layout-1 {
-	grid-template-columns: 1fr;
-	grid-template-rows: 1fr;
-}
-#videos.layout-2 {
-	grid-template-columns: 1fr 1fr;
-	grid-template-rows: 1fr;
-}
-#videos.layout-3,
-#videos.layout-4 {
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: 1fr 1fr;
-}
-/* The odd participant out sits centered on the last row. */
-#videos.layout-3 .video:last-child {
-	grid-column: 1 / -1;
-	max-width: 50%;
+	align-items: center;
+	justify-items: center;
 }
 #videos .video {
 	position: relative;
@@ -192,7 +179,7 @@
 }
 #videos .video video {
 	/* contain, so a shared screen stays legible instead of being cropped */
-	object-fit: contain;
+	object-fit: cover;
 	width: 100%;
 	height: 100%;
 	display: block;
@@ -225,22 +212,11 @@
 	left: 0px;
 	z-index: 10;
 }
-#controls #buttons {
+/* Every control pins itself to a corner; there is no wrapper holding them. */
+.control {
 	position: fixed;
-	bottom: 0px;
-	left: 0px;
-	right: 0px;
+	bottom: 0.5rem;
 	z-index: 50;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0.5rem;
-	padding: 0.5rem 1rem;
-	box-sizing: border-box;
-}
-/* Circles as tall as the pre-call join button, spread across the full width. */
-#controls button {
-	flex: none;
 	width: 3rem;
 	height: 3rem;
 	padding: 0px;
@@ -252,18 +228,28 @@
 	align-items: center;
 	justify-content: center;
 }
-#controls button:hover {
+.control:hover {
 	border-color: var(--controls-active);
 	background: var(--controls-active);
 }
-#controls button.off {
+.control.off {
 	border-color: var(--red);
 	background: var(--red);
 }
+#more-button {
+	right: 0.5rem;
+}
+#chat-button {
+	left: 0.5rem;
+}
+#screenshare-button {
+	left: 50%;
+	transform: translateX(-50%);
+}
 
-/* The menu hugs the left edge, the chat the right — both above the buttons. */
-#controls #extra,
-#controls #chats {
+/* The chat hugs the left edge, the menu the right — both above the buttons. */
+#extra,
+#chats {
 	position: fixed;
 	bottom: 5rem;
 	z-index: 50;
@@ -276,58 +262,58 @@
 	border-radius: 0.5rem;
 	overflow: hidden;
 }
-#controls #extra {
-	left: 1rem;
-}
-#controls #chats {
+#extra {
 	right: 1rem;
 }
-#controls #extra ul {
+#chats {
+	left: 1rem;
+}
+#extra ul {
 	margin: 0px;
 	padding: 0.25rem;
 	list-style: none;
 }
-#controls #extra ul li {
+#extra ul li {
 	padding: 0.5rem 0.75rem;
 	border-radius: 0.25rem;
 }
-#controls #extra ul li.action {
+#extra ul li.action {
 	cursor: pointer;
 }
-#controls #extra ul li.action.red {
+#extra ul li.action.red {
 	color: var(--red);
 }
-#controls #extra ul li.action:hover {
+#extra ul li.action:hover {
 	background: var(--tile);
 }
-#controls #extra ul li i {
+#extra ul li i {
 	margin-right: 0.5rem;
 }
-#controls #chats #scroll {
+#chats #scroll {
 	max-height: 50vh;
 	overflow-y: auto;
 }
-#controls #chats .chat {
+#chats .chat {
 	padding: 0.75rem;
 	line-height: 1.4;
 	font-size: 0.9rem;
 	border-bottom: 1px solid var(--border);
 }
-#controls #chats .chat:last-child {
+#chats .chat:last-child {
 	border-bottom: none;
 }
-#controls #chats .chat.composer {
+#chats .chat.composer {
 	border-top: 1px solid var(--border);
 	background: var(--tile);
 }
-#controls #chats .chat .name {
+#chats .chat .name {
 	font-weight: bold;
 }
-#controls #chats .chat .date {
+#chats .chat .date {
 	font-size: 0.75rem;
 	opacity: 0.6;
 }
-#controls #chats .chat textarea {
+#chats .chat textarea {
 	background: none;
 	font: inherit;
 	color: inherit;
@@ -338,22 +324,4 @@
 	padding: 0px;
 	resize: none;
 	height: 3rem;
-}
-
-@media only screen and (max-width: 600px) {
-	#videos.layout-2 {
-		grid-template-columns: 1fr;
-		grid-template-rows: 1fr 1fr;
-	}
-	#videos.layout-3 {
-		grid-template-columns: 1fr;
-		grid-template-rows: 1fr 1fr 1fr;
-	}
-	#videos.layout-3 .video:last-child {
-		max-width: 100%;
-	}
-	#videos.layout-4 {
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 1fr 1fr;
-	}
 }
