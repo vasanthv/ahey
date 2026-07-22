@@ -4,7 +4,7 @@
  * User's audio, video or chat messages does not use this socket.
  */
 
-const { isValidRoomName } = require("./utils");
+const { isValidRoomName, isPublicRoomName } = require("./utils");
 
 // Keys in these maps come from untrusted clients. Null-prototype objects keep a
 // key like "__proto__" from resolving to Object.prototype (prototype pollution).
@@ -15,11 +15,14 @@ const peers = Object.create(null);
 const has = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
 
 const signallingServer = (socket) => {
-	socket.rooms = Object.create(null);
+	// The rooms this socket has joined. Kept here rather than on the socket:
+	// socket.io defines its own read-only `socket.rooms` getter.
+	const joinedRooms = Object.create(null);
+
 	sockets[socket.id] = socket;
 
 	socket.on("disconnect", () => {
-		for (const room in socket.rooms) {
+		for (const room in joinedRooms) {
 			part(room);
 		}
 		delete sockets[socket.id];
@@ -33,7 +36,7 @@ const signallingServer = (socket) => {
 		if (!isValidRoomName(room)) return;
 
 		// Already Joined
-		if (has(socket.rooms, room)) return;
+		if (has(joinedRooms, room)) return;
 
 		if (!has(rooms, room)) rooms[room] = Object.create(null);
 
@@ -51,7 +54,7 @@ const signallingServer = (socket) => {
 		}
 
 		rooms[room][socket.id] = socket;
-		socket.rooms[room] = room;
+		joinedRooms[room] = room;
 
 		const numPeers = Object.keys(peers[room]).length;
 		console.log("joined room=" + room + " peers=" + numPeers);
@@ -62,7 +65,7 @@ const signallingServer = (socket) => {
 		const key = config?.key;
 
 		// Only a member of the room may update data, and only its own entry.
-		if (!isValidRoomName(room) || !has(socket.rooms, room)) return;
+		if (!isValidRoomName(room) || !has(joinedRooms, room)) return;
 		if (!has(peers, room) || !has(peers[room], socket.id)) return;
 		// Never let a client write prototype-mutating keys.
 		if (typeof key !== "string" || key === "__proto__" || key === "constructor" || key === "prototype") return;
@@ -72,9 +75,9 @@ const signallingServer = (socket) => {
 
 	const part = (room) => {
 		// Socket not in room
-		if (!has(socket.rooms, room)) return;
+		if (!has(joinedRooms, room)) return;
 
-		delete socket.rooms[room];
+		delete joinedRooms[room];
 		if (has(rooms, room)) delete rooms[room][socket.id];
 		if (has(peers, room)) delete peers[room][socket.id];
 
@@ -96,7 +99,7 @@ const signallingServer = (socket) => {
 	// Relay is only permitted between peers that share a room, so a client
 	// cannot push offers/candidates at arbitrary sockets on the server.
 	const sharesRoomWith = (peerId) => {
-		for (const room in socket.rooms) {
+		for (const room in joinedRooms) {
 			if (has(rooms, room) && has(rooms[room], peerId)) return true;
 		}
 		return false;
@@ -124,4 +127,22 @@ const signallingServer = (socket) => {
 	});
 };
 
-module.exports = signallingServer;
+/**
+ * Lists the public rooms (room names prefixed with "@") that currently have at
+ * least one peer in them, busiest first. Only the room name and the peer count
+ * are exposed - never the peers themselves.
+ */
+const getPublicRooms = () =>
+	Object.keys(peers)
+		.filter(isPublicRoomName)
+		.map((room) => ({ room, peerCount: Object.keys(peers[room]).length }))
+		.filter(({ peerCount }) => peerCount > 0)
+		.sort((a, b) => b.peerCount - a.peerCount || a.room.localeCompare(b.room));
+
+/**
+ * Whether a room currently has anyone in it. Used by the /random redirects so a
+ * newcomer is never dropped into a call that is already in progress.
+ */
+const isRoomLive = (room) => has(peers, room) && Object.keys(peers[room]).length > 0;
+
+module.exports = { signallingServer, getPublicRooms, isRoomLive };

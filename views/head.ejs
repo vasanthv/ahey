@@ -19,10 +19,13 @@
 
   <link rel="stylesheet" href="/style.css" />
 
+  <% if(page==="room" || page==="public" ) { %>
+  <script defer src="/vue.global.prod.js"></script>
+  <% } %>
+
   <% if(page==="room" ) { %>
   <link rel="stylesheet" href="/app.css" />
   <script defer src="/socket.io/socket.io.js"></script>
-  <script defer src="/vue.global.prod.js"></script>
   <script defer src="/ice-config.js"></script>
   <script defer src="/peer.js"></script>
   <script defer src="/app.js"></script>

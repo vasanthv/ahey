@@ -7,7 +7,7 @@ const app = express(); // Create an Express application
 
 // Import configuration and signalling server logic
 const config = require("./server/config");
-const signallingServer = require("./server/signalling-server");
+const { signallingServer } = require("./server/signalling-server");
 const routes = require("./server/routes");
 const turn = require("./server/turn");
 

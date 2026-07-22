@@ -30,25 +30,16 @@
     <script type="text/javascript">
       const inputElement = document.querySelector("#roombox input");
 
-      function onJoin() {
-        let roomId = document.querySelector("#roombox input").value;
-        if (!roomId) roomId = Math.random().toString(36).substr(2, 6);
+      const onJoin = () =>
+        window.location.pathname = inputElement.value || "random";
 
-        window.location.pathname = roomId;
-      }
 
-      inputElement.addEventListener("keypress", function(e) {
+      inputElement.addEventListener("keypress", (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
           onJoin();
         }
       });
-
-      (() => {
-        if ("serviceWorker" in navigator) {
-          navigator.serviceWorker.register("/sw.js");
-        }
-      })();
     </script>
 
     <%- include('footer'); -%>

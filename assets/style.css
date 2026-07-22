@@ -100,6 +100,25 @@ footer a {
 	margin: 20px 0;
 }
 
+.rooms {
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+}
+.rooms li {
+	align-items: center;
+	gap: 1rem;
+	padding: 0.5rem 0px;
+	border-bottom: 1px solid rgba(128, 128, 128, 0.3);
+}
+.rooms li a {
+	text-decoration: none;
+}
+.rooms li a:hover,
+.rooms li a:active {
+	text-decoration: underline;
+}
+
 #logo {
 	width: 3rem;
 	height: 3rem;

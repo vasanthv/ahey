@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('head'); -%>
+
+<body>
+  <div class="wrap">
+    <%- include('header'); -%>
+    <h1>Public rooms</h1>
+    <div class="row">
+      <p>
+        Rooms with an id that starts with "@" are public - anyone can find them here and join in.
+      </p>
+    </div>
+
+    <div class="row" id="public-rooms" v-cloak>
+      <ul class="rooms" v-if="rooms.length">
+        <li class="flex" v-for="room in rooms" v-bind:key="room.room">
+          <a class="flex-1" v-bind:href="'/' + room.room">{{room.room}}</a>
+          <span class="small light">{{room.peerCount}} {{room.peerCount === 1 ? "person" : "people"}}</span>
+        </li>
+      </ul>
+
+      <div class="light" v-else>
+        <br />
+        No public rooms are live right now. <a href="/@random">Start one</a> with an id like "@lounge" and it shows up here.
+        <br /><br />
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      // Vue loads with `defer`, so wait for it before mounting.
+      window.addEventListener("DOMContentLoaded", () => {
+        Vue.createApp({
+          data() {
+            // Seeded from the server so the first paint needs no round trip.
+            return {
+              rooms: <%- JSON.stringify(rooms) %>
+            };
+          },
+          methods: {
+            async refreshRooms() {
+              try {
+                const response = await fetch("/public.json");
+                const {
+                  rooms
+                } = await response.json();
+                this.rooms = rooms;
+              } catch {
+                // Keep the last known list if the refresh fails.
+              }
+            },
+          },
+          mounted() {
+            // Rooms come and go - refresh instead of leaving a stale list on screen.
+            setInterval(this.refreshRooms, 10000);
+          },
+        }).mount("#public-rooms");
+      });
+    </script>
+
+    <%- include('footer'); -%>
+  </div>
+</body>
+
+</html>
