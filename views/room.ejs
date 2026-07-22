@@ -86,7 +86,7 @@
 
         <section id="chats" v-if="showChat">
           <div id="scroll">
-            <div class="chat" v-for="(chat, i) in chats" v-bind:key="i">
+            <div class="chat" v-for="(chat, i) in chats" v-bind:key="i" v-bind:tabindex="i">
               <div><span class="name">{{chat.name}}:</span> <span v-html="linkify(chat.message)"></span></div>
               <div class="date">{{formatDate(chat.date)}}</div>
             </div>

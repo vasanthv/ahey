@@ -315,6 +315,11 @@
 #chats .chat .date {
 	font-size: 0.75rem;
 	opacity: 0.6;
+	display: none;
+}
+#chats .chat:active .date,
+#chats .chat:focus .date {
+	display: block;
 }
 #chats .chat textarea {
 	background: none;
