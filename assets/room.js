@@ -33,8 +33,6 @@ const App = Vue.createApp({
 			chatMessage: "",
 			showChat: false,
 			showExtraControls: false,
-			showAudioDevices: false,
-			showVideoDevices: false,
 			toast: [{ type: "", message: "" }],
 		};
 	},
@@ -81,8 +79,6 @@ const App = Vue.createApp({
 		resetPopups() {
 			this.showChat = false;
 			this.showExtraControls = false;
-			this.showAudioDevices = false;
-			this.showVideoDevices = false;
 		},
 		async toggleMedia(kind) {
 			const enabledKey = kind + "Enabled";
@@ -110,26 +106,6 @@ const App = Vue.createApp({
 				} catch {
 					this.setToast(`Failed to enable ${kind}`);
 				}
-			}
-		},
-		async switchMediaDevice(newDeviceId, kind) {
-			try {
-				const constraints =
-					kind === "audio"
-						? { audio: { deviceId: { exact: newDeviceId } }, video: false }
-						: { audio: false, video: { deviceId: { exact: newDeviceId } } };
-				const newStream = await navigator.mediaDevices.getUserMedia(constraints);
-				const getTracks = kind === "audio" ? "getAudioTracks" : "getVideoTracks";
-				const replaceTrackMethod = kind === "audio" ? "replaceAudioTrack" : "replaceVideoTrack";
-				if (this.localMediaStream) {
-					const oldTrack = this.localMediaStream[getTracks]()[0];
-					if (oldTrack) oldTrack.stop();
-				}
-				const newTrack = newStream[getTracks]()[0];
-				this[replaceTrackMethod](newTrack);
-				this.setToast(`${kind.charAt(0).toUpperCase() + kind.slice(1)} device changed successfully`, "success");
-			} catch {
-				this.setToast(`Failed to switch ${kind} device`);
 			}
 		},
 		replaceMediaTrack(newTrack, kind) {
@@ -341,7 +317,7 @@ const App = Vue.createApp({
 			if (!this.roomId) return alert("Invalid room id");
 			if (!this.name) return alert("Please enter your name");
 			this.callInitiated = true;
-			this.showExtraControls - false;
+			this.showExtraControls = false;
 			window.initiateCall();
 		},
 		setToast(message, type = "error") {
@@ -363,12 +339,6 @@ const App = Vue.createApp({
 		},
 		toggleVideo() {
 			return this.toggleMedia("video");
-		},
-		switchAudioDevice(newDeviceId) {
-			return this.switchMediaDevice(newDeviceId, "audio");
-		},
-		switchVideoDevice(newDeviceId) {
-			return this.switchMediaDevice(newDeviceId, "video");
 		},
 		togglePreCallAudio() {
 			this.audioEnabled = !this.audioEnabled;
@@ -507,15 +477,24 @@ const App = Vue.createApp({
 				this.audioDevices = devices.filter((device) => device.kind === "audioinput");
 				this.videoDevices = devices.filter((device) => device.kind === "videoinput");
 
-				// Set default device ids
-				const defaultAudioDeviceId = this.audioDevices.find((device) => device.deviceId == "default")?.deviceId;
-				const defaultVideoDeviceId = this.videoDevices.find((device) => device.deviceId == "default")?.deviceId;
-
-				this.selectedAudioDeviceId = defaultAudioDeviceId ?? this.audioDevices[0]?.deviceId;
-				this.selectedVideoDeviceId = defaultVideoDeviceId ?? this.videoDevices[0]?.deviceId;
+				this.syncSelectedDevice("audio");
+				this.syncSelectedDevice("video");
 			} catch (error) {
 				console.error("Failed to initialize media devices:", error);
 			}
+		},
+		syncSelectedDevice(kind) {
+			// Point the select at whatever the live stream is actually using, so it
+			// opens on the device the browser picked by default.
+			const devices = kind === "audio" ? this.audioDevices : this.videoDevices;
+			const selectedKey = kind === "audio" ? "selectedAudioDeviceId" : "selectedVideoDeviceId";
+			const getTracks = kind === "audio" ? "getAudioTracks" : "getVideoTracks";
+
+			const activeDeviceId = this.localMediaStream?.[getTracks]()[0]?.getSettings?.().deviceId;
+			const isKnown = (deviceId) => deviceId && devices.some((device) => device.deviceId === deviceId);
+
+			if (isKnown(activeDeviceId)) this[selectedKey] = activeDeviceId;
+			else if (!isKnown(this[selectedKey])) this[selectedKey] = devices[0]?.deviceId ?? null;
 		},
 		getBlankTrack(kind) {
 			if (kind === "video") {
@@ -563,10 +542,9 @@ const App = Vue.createApp({
 					videoElem.srcObject = this.localMediaStream;
 				}
 
-				// Enumerate devices once during pre-call flow if not already done
-				if (this.audioDevices.length === 0 && this.videoDevices.length === 0) {
-					await this.enumerateDevices();
-				}
+				// Labels are only exposed once permission is granted, so re-read the
+				// device list on every attempt.
+				await this.enumerateDevices();
 			} catch {
 				// If user denies access, create blank tracks as needed
 				this.audioEnabled = false;
@@ -577,20 +555,8 @@ const App = Vue.createApp({
 				if (videoElem) {
 					videoElem.srcObject = this.localMediaStream;
 				}
+				await this.enumerateDevices();
 				this.setToast("Unable to access camera/mic");
-			}
-		},
-		requestFullscreen(videoElem) {
-			if (!videoElem) return;
-			const el = Array.isArray(videoElem) ? videoElem[0] : videoElem;
-			if (el.requestFullscreen) {
-				el.requestFullscreen();
-			} else if (el.webkitRequestFullscreen) {
-				el.webkitRequestFullscreen();
-			} else if (el.mozRequestFullScreen) {
-				el.mozRequestFullScreen();
-			} else if (el.msRequestFullscreen) {
-				el.msRequestFullscreen();
 			}
 		},
 	},

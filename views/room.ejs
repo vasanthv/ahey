@@ -1,140 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
-	<%- include('head'); -%>
+<%- include('head'); -%>
 
-	<body>
-		<main id="app">
-			<div class="wrap max" v-cloak>
-				<section id="toast" v-bind:class="toast.type + (toast.message ? ' show' : '')" v-on:click="toast.message = ''">
-					{{toast.message}}
-				</section>
+<body>
+  <main id="app">
+    <div v-cloak>
+      <section id="toast" v-bind:class="toast.type + (toast.message ? ' show' : '')" v-on:click="toast.message = ''">
+        {{toast.message}}
+      </section>
 
-				<section id="pre-call" v-if="!callInitiated">
-					<div id="videos" class="layout-1">
-						<div class="video self">
-							<video id="preCallVideo" class="video self" autoplay muted playsinline></video>
-						</div>
-					</div>
-				</section>
+      <section id="pre-call" v-if="!callInitiated">
+        <div class="preview">
+          <video id="preCallVideo" autoplay muted playsinline></video>
+          <div class="toggles">
+            <button v-bind:class="audioEnabled ? '' : 'off'" @click="togglePreCallAudio">
+              <i v-bind:class="'icon-mic'+(audioEnabled ? '' : '-off')"></i>
+            </button>
+            <button v-bind:class="videoEnabled ? '' : 'off'" @click="togglePreCallVideo">
+              <i v-bind:class="'icon-video'+(videoEnabled ? '' : '-off')"></i>
+            </button>
+          </div>
+        </div>
 
-				<section v-if="callInitiated">
-					<div id="videos" v-bind:class="videoLayoutClass">
-						<div class="video self">
-							<video
-								v-bind:ref="'selfVideo'"
-								v-bind:src-object.prop.camel="localMediaStream"
-								autoplay
-								muted
-								playsinline
-							></video>
-							<div class="meta">{{name}} (You)</div>
-						</div>
-						<div class="video" v-for="(peer, i) in peersArray" v-bind:key="peerKey">
-							<video
-								v-bind:ref="'peerVideo' + i"
-								v-bind:src-object.prop.camel="peer.stream"
-								autoplay
-								playsinline
-							></video>
-							<button class="fullscreen-btn" @click="requestFullscreen($refs['peerVideo' + i])">
-								<i class="icon-maximize"></i>
-							</button>
-							<div class="meta">
-								{{peer.name}}
-								<i v-bind:class="'green icon-mic'" v-if="peer.isTalking"></i>
-							</div>
-						</div>
-					</div>
-				</section>
+        <div class="field">
+          <input type="text" id="myName" v-model="name" v-on:keyup="updateName" v-on:keyup.enter="initiateCall" placeholder="Your name" maxlength="50" />
+        </div>
 
-				<div id="blanket" v-if="showExtraControls || showChat" @click="resetPopups"></div>
-				<secion id="controls">
-					<section id="extra" v-if="showExtraControls">
-						<ul>
-							<li class="action" @click="showAudioDevices = !showAudioDevices">
-								<i class="icon-mic"></i> Change audio
-							</li>
-							<li
-								class="action indent"
-								v-if="showAudioDevices"
-								v-for="(audioDevice, i) in audioDevices"
-								v-bind:key="audioDevice.deviceId"
-								@click="selectedAudioDeviceId = audioDevice.deviceId"
-							>
-								<i class="icon-minus" v-if="selectedAudioDeviceId !== audioDevice.deviceId"></i>
-								<i class="icon-check" v-if="selectedAudioDeviceId === audioDevice.deviceId"></i>
-								{{audioDevice.label}}
-							</li>
+        <div class="field">
+          <select v-model="selectedVideoDeviceId" v-on:change="getPreCallMedia" v-bind:disabled="!videoDevices.length">
+            <option v-if="!videoDevices.length" v-bind:value="null">No camera found</option>
+            <option v-for="videoDevice in videoDevices" v-bind:key="videoDevice.deviceId" :value="videoDevice.deviceId">
+              {{videoDevice.label || "Camera"}}
+            </option>
+          </select>
+        </div>
 
-							<li class="action" @click="showVideoDevices = !showVideoDevices">
-								<i class="icon-video"></i> Change video
-							</li>
-							<li
-								class="action indent"
-								v-if="showVideoDevices"
-								v-for="(videoDevice, i) in videoDevices"
-								v-bind:key="videoDevice.deviceId"
-								@click="selectedVideoDeviceId = videoDevice.deviceId"
-							>
-								<i class="icon-minus" v-if="selectedVideoDeviceId !== videoDevice.deviceId"></i>
-								<i class="icon-check" v-if="selectedVideoDeviceId === videoDevice.deviceId"></i>
-								{{videoDevice.label}}
-							</li>
+        <div class="field">
+          <select v-model="selectedAudioDeviceId" v-on:change="getPreCallMedia" v-bind:disabled="!audioDevices.length">
+            <option v-if="!audioDevices.length" v-bind:value="null">No microphone found</option>
+            <option v-for="audioDevice in audioDevices" v-bind:key="audioDevice.deviceId" :value="audioDevice.deviceId">
+              {{audioDevice.label || "Microphone"}}
+            </option>
+          </select>
+        </div>
 
-							<li class="action" v-if="screenShareSupported && callInitiated" v-on:click="toggleScreenShare">
-								<i class="icon-screen"></i> Start screenshare
-							</li>
-							<li class="action" @click="copyURL"><i class="icon-link"></i> Copy room URL</li>
-							<li class="action red" @click="endCall" v-if="callInitiated"><i class="icon-phone-off"></i> Leave</li>
-						</ul>
-					</section>
+        <button class="join" v-on:click="initiateCall">Join /<%= title %></button>
 
-					<section id="chats" v-if="callInitiated && showChat">
-						<div id="scroll">
-							<div class="chat" v-for="(chat, i) in chats" v-bind:key="i">
-								<div><span class="name">{{chat.name}}:</span> <span v-html="linkify(chat.message)"></span></div>
-								<div class="date">{{formatDate(chat.date)}}</div>
-							</div>
-						</div>
+        <div class="terms">By proceeding you accept our <a href="/terms" target="_blank">terms</a></div>
+      </section>
 
-						<div class="chat">
-							<textarea
-								v-model="chatMessage"
-								rows="1"
-								v-on:keydown.enter="sendChat"
-								placeholder="Enter your message"
-							></textarea>
-						</div>
-					</section>
+      <section v-if="callInitiated">
+        <div id="videos" v-bind:class="videoLayoutClass">
+          <div class="video self">
+            <video v-bind:src-object.prop.camel="localMediaStream" autoplay muted playsinline></video>
+            <div class="meta">{{name}} (You)</div>
+          </div>
+          <div class="video" v-for="peer in peersArray" v-bind:key="peerKey">
+            <video v-bind:src-object.prop.camel="peer.stream" autoplay playsinline></video>
+            <div class="meta">
+              {{peer.name}}
+              <i v-bind:class="'green icon-mic'" v-if="peer.isTalking"></i>
+            </div>
+          </div>
+        </div>
 
-					<section id="name" v-if="!callInitiated && !showExtraControls">
-						<input
-							type="text"
-							id="myName"
-							v-model="name"
-							v-on:keyup="updateName"
-							v-on:keyup.enter="initiateCall"
-							placeholder="Your name"
-							maxlength="50"
-						/>
-					</section>
+        <div id="blanket" v-if="showExtraControls || showChat" @click="resetPopups"></div>
+        <section id="controls">
+          <section id="extra" v-if="showExtraControls">
+            <ul>
+              <li class="action" v-if="screenShareSupported" v-on:click="toggleScreenShare">
+                <i class="icon-screen"></i> Start screenshare
+              </li>
+              <li class="action" @click="copyURL"><i class="icon-link"></i> Copy room URL</li>
+              <li class="action red" @click="endCall"><i class="icon-phone-off"></i> Leave</li>
+            </ul>
+          </section>
 
-					<section id="buttons">
-						<button @click="callInitiated ? toggleAudio() : togglePreCallAudio()">
-							<i :class="'icon-mic'+(audioEnabled ? '' : '-off')"></i>
-						</button>
-						<button @click="callInitiated ? toggleVideo() : togglePreCallVideo()">
-							<i :class="'icon-video'+(videoEnabled ? '' : '-off')"></i>
-						</button>
-						<button @click="toggleChat" v-if="callInitiated && chatEnabled"><i class="icon-chat"></i></button>
-						<button @click="toggleScreenShare" v-if="isScreenSharing" class="red"><i class="icon-screen"></i></button>
-						<button @click="toggleExtraControls"><i class="icon-more-vertical"></i></button>
-						<button class="join" v-if="!callInitiated" v-on:click="initiateCall">
-							<i class="icon-phone"></i>&nbsp;Join
-						</button>
-					</section>
-				</secion>
-			</div>
-		</main>
-	</body>
+          <section id="chats" v-if="showChat">
+            <div id="scroll">
+              <div class="chat" v-for="(chat, i) in chats" v-bind:key="i">
+                <div><span class="name">{{chat.name}}:</span> <span v-html="linkify(chat.message)"></span></div>
+                <div class="date">{{formatDate(chat.date)}}</div>
+              </div>
+            </div>
+
+            <div class="chat composer">
+              <textarea v-model="chatMessage" rows="1" v-on:keydown.enter="sendChat" placeholder="Enter your message"></textarea>
+            </div>
+          </section>
+
+          <section id="buttons">
+            <button @click="toggleExtraControls"><i class="icon-more-vertical"></i></button>
+            <button v-bind:class="videoEnabled ? '' : 'off'" @click="toggleVideo">
+              <i :class="'icon-video'+(videoEnabled ? '' : '-off')"></i>
+            </button>
+            <button v-bind:class="audioEnabled ? '' : 'off'" @click="toggleAudio">
+              <i :class="'icon-mic'+(audioEnabled ? '' : '-off')"></i>
+            </button>
+            <button @click="toggleChat" v-if="chatEnabled"><i class="icon-chat"></i></button>
+            <button @click="toggleScreenShare" v-if="isScreenSharing" class="off">
+              <i class="icon-screen"></i>
+            </button>
+          </section>
+        </section>
+      </section>
+    </div>
+  </main>
+</body>
+
 </html>

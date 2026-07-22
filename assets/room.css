@@ -1,0 +1,377 @@
+@import "icomoon/style.css";
+
+/* style.css provides the base (white background, Inter, --background/--text). */
+:root {
+	--tile: #f1f1f1;
+	--border: #e0e0e0;
+	--controls: rgba(39, 39, 39, 0.9);
+	--controls-active: #333333;
+
+	--red: #c0392b;
+	--green: #21c73d;
+}
+
+/* style.css spaces out prose sections; the room is laid out on its own terms. */
+#app section {
+	margin: 0px auto;
+}
+
+#toast {
+	background-color: var(--text);
+	color: var(--background);
+	text-align: center;
+	box-sizing: border-box;
+	position: fixed;
+	z-index: 60;
+	left: 0px;
+	right: 0px;
+	top: 0rem;
+	max-height: 0;
+	margin: auto;
+	overflow: hidden;
+	font-size: 1rem;
+	line-height: 2rem;
+	transition: max-height 0.25s ease-in;
+}
+#toast.show {
+	max-height: 5rem;
+}
+#toast.error {
+	background: var(--red);
+	color: #ffffff;
+}
+#toast.success {
+	background: var(--green);
+	color: #ffffff;
+}
+
+/* ---------------------------------------------------------------
+   Pre-call: a single 480px panel — video, name, devices, join.
+   --------------------------------------------------------------- */
+#pre-call {
+	width: 100%;
+	max-width: 480px;
+	padding: 2rem 1rem;
+	box-sizing: border-box;
+}
+#pre-call .preview {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	background: var(--tile);
+	border-radius: 0.75rem;
+	overflow: hidden;
+}
+#pre-call .preview video {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	transform: rotateY(180deg);
+}
+#pre-call .preview .toggles {
+	position: absolute;
+	bottom: 0.75rem;
+	left: 0px;
+	right: 0px;
+	display: flex;
+	justify-content: center;
+	gap: 0.5rem;
+}
+#pre-call .preview .toggles button {
+	width: 2.5rem;
+	height: 2.5rem;
+	border-radius: 50%;
+	border: none;
+	background: var(--controls);
+	color: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+#pre-call .preview .toggles button:hover {
+	background: var(--controls-active);
+}
+#pre-call .preview .toggles button.off {
+	background: var(--red);
+}
+#pre-call .field {
+	margin-top: 0.75rem;
+}
+#pre-call input[type="text"],
+#pre-call select {
+	font: inherit;
+	color: inherit;
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0.75rem 1rem;
+	background: var(--background);
+	border: 2px solid var(--border);
+	border-radius: 0.5rem;
+}
+#pre-call input[type="text"]:focus,
+#pre-call select:focus {
+	border-color: var(--text);
+}
+#pre-call select {
+	appearance: none;
+	-webkit-appearance: none;
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23242424' stroke-width='2' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 1rem center;
+	background-size: 0.75rem;
+	padding-right: 2.5rem;
+	cursor: pointer;
+	text-overflow: ellipsis;
+}
+#pre-call button.join {
+	font: inherit;
+	display: block;
+	width: 100%;
+	margin-top: 0.75rem;
+	padding: 0.75rem 1rem;
+	background-color: var(--text);
+	color: var(--background);
+	border: 2px solid var(--text);
+	border-radius: 0.5rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+#pre-call button.join:hover:not(:disabled) {
+	opacity: 0.85;
+}
+#pre-call .terms {
+	margin-top: 0.75rem;
+	text-align: center;
+	font-size: 0.75rem;
+	opacity: 0.6;
+}
+
+/* ---------------------------------------------------------------
+   In call: full-width video grid.
+   --------------------------------------------------------------- */
+#videos {
+	display: grid;
+	width: 100%;
+	height: calc(100vh - 5rem);
+	height: calc(100dvh - 5rem);
+	padding: 0.5rem;
+	box-sizing: border-box;
+	gap: 0.5rem;
+	align-items: center;
+	justify-items: center;
+}
+#videos.layout-1 {
+	grid-template-columns: 1fr;
+	grid-template-rows: 1fr;
+}
+#videos.layout-2 {
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr;
+}
+#videos.layout-3,
+#videos.layout-4 {
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
+}
+/* The odd participant out sits centered on the last row. */
+#videos.layout-3 .video:last-child {
+	grid-column: 1 / -1;
+	max-width: 50%;
+}
+#videos.layout-5,
+#videos.layout-6 {
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
+}
+#videos.layout-7-plus {
+	grid-template-columns: repeat(4, 1fr);
+	grid-auto-rows: auto;
+}
+#videos .video {
+	position: relative;
+	overflow: hidden;
+	box-sizing: border-box;
+	border-radius: 0.75rem;
+	background: var(--tile);
+	width: 100%;
+	height: 100%;
+}
+#videos .video video {
+	/* contain, so a shared screen stays legible instead of being cropped */
+	object-fit: contain;
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+#videos .video.self video {
+	transform: rotateY(180deg);
+}
+#videos .video .meta {
+	position: absolute;
+	bottom: 0.5rem;
+	left: 0.5rem;
+	background: var(--controls);
+	color: #ffffff;
+	font-size: small;
+	padding: 0.1rem 0.5rem;
+	border-radius: 0.25rem;
+	z-index: 5;
+}
+#videos .video .meta i.green {
+	color: var(--green);
+}
+/* ---------------------------------------------------------------
+   In call controls.
+   --------------------------------------------------------------- */
+#blanket {
+	position: fixed;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	left: 0px;
+	z-index: 10;
+}
+#controls #buttons {
+	position: fixed;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	z-index: 50;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding: 0.5rem 1rem;
+	box-sizing: border-box;
+}
+/* Circles as tall as the pre-call join button, spread across the full width. */
+#controls button {
+	flex: none;
+	width: 3rem;
+	height: 3rem;
+	padding: 0px;
+	border: 2px solid var(--controls);
+	border-radius: 50%;
+	color: #ffffff;
+	background: var(--controls);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+#controls button:hover {
+	border-color: var(--controls-active);
+	background: var(--controls-active);
+}
+#controls button.off {
+	border-color: var(--red);
+	background: var(--red);
+}
+
+/* The menu hugs the left edge, the chat the right — both above the buttons. */
+#controls #extra,
+#controls #chats {
+	position: fixed;
+	bottom: 5rem;
+	z-index: 50;
+	width: calc(100% - 2rem);
+	max-width: 320px;
+	margin: 0px;
+	box-sizing: border-box;
+	background: var(--background);
+	border: 2px solid var(--border);
+	border-radius: 0.5rem;
+	overflow: hidden;
+}
+#controls #extra {
+	left: 1rem;
+}
+#controls #chats {
+	right: 1rem;
+}
+#controls #extra ul {
+	margin: 0px;
+	padding: 0.25rem;
+	list-style: none;
+}
+#controls #extra ul li {
+	padding: 0.5rem 0.75rem;
+	border-radius: 0.25rem;
+}
+#controls #extra ul li.action {
+	cursor: pointer;
+}
+#controls #extra ul li.action.red {
+	color: var(--red);
+}
+#controls #extra ul li.action:hover {
+	background: var(--tile);
+}
+#controls #extra ul li i {
+	margin-right: 0.5rem;
+}
+#controls #chats #scroll {
+	max-height: 50vh;
+	overflow-y: auto;
+}
+#controls #chats .chat {
+	padding: 0.75rem;
+	line-height: 1.4;
+	font-size: 0.9rem;
+	border-bottom: 1px solid var(--border);
+}
+#controls #chats .chat:last-child {
+	border-bottom: none;
+}
+#controls #chats .chat.composer {
+	border-top: 1px solid var(--border);
+	background: var(--tile);
+}
+#controls #chats .chat .name {
+	font-weight: bold;
+}
+#controls #chats .chat .date {
+	font-size: 0.75rem;
+	opacity: 0.6;
+}
+#controls #chats .chat textarea {
+	background: none;
+	font: inherit;
+	color: inherit;
+	display: block;
+	width: 100%;
+	border: none;
+	box-sizing: border-box;
+	padding: 0px;
+	resize: none;
+	height: 3rem;
+}
+
+@media only screen and (max-width: 600px) {
+	#videos.layout-2 {
+		grid-template-columns: 1fr;
+		grid-template-rows: 1fr 1fr;
+	}
+	#videos.layout-3 {
+		grid-template-columns: 1fr;
+		grid-template-rows: 1fr 1fr 1fr;
+	}
+	#videos.layout-3 .video:last-child {
+		max-width: 100%;
+	}
+	#videos.layout-4 {
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: 1fr 1fr;
+	}
+	#videos.layout-5,
+	#videos.layout-6 {
+		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-rows: 1fr 1fr;
+	}
+	#videos.layout-7-plus {
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: auto;
+	}
+}
