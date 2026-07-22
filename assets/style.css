@@ -30,6 +30,11 @@ h4 {
 	font-style: italic;
 	font-weight: 500;
 }
+hr {
+	border-top: 1px solid var(--text);
+	height: 1px;
+	opacity: 0.3;
+}
 button {
 	font: inherit;
 	color: inherit;
@@ -85,6 +90,9 @@ footer a {
 }
 .light {
 	opacity: 0.75;
+}
+.spacer {
+	height: 1rem;
 }
 .flex {
 	display: flex;
