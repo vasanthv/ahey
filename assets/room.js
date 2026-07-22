@@ -439,7 +439,7 @@ const App = Vue.createApp({
 				this.sendDataMessage("chat", this.chatMessage.slice(0, MAX_CHAT_LENGTH));
 				this.chatMessage = "";
 			} else {
-				alert("No peers in the room");
+				this.setToast("No peers in the room");
 			}
 		},
 		sendDataMessage(key, value) {
