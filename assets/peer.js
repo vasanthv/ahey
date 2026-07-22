@@ -183,10 +183,7 @@ window.initiateCall = () => {
 		}
 	});
 
-	signalingSocket.on("roomFull", (config) => {
-		App.endCall();
-		App.setToast(`This room is full. Up to ${config.maxPeers} people can join a room.`);
-	});
+	signalingSocket.on("roomFull", (config) => App.handleRoomFull(config.maxPeers));
 
 	signalingSocket.on("sessionDescription", handleSessionDescription);
 	signalingSocket.on("iceCandidate", handleIceCandidate);

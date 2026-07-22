@@ -376,8 +376,13 @@ const App = Vue.createApp({
 			// Show toast
 			this.setToast("Call ended", "success");
 
-			// Re-initialize pre-call preview
-			this.getPreCallMedia();
+			// Re-initialize pre-call preview. Returned so callers can toast a
+			// message of their own once the preview has settled.
+			return this.getPreCallMedia();
+		},
+		async handleRoomFull(maxPeers) {
+			await this.endCall();
+			this.setToast(`This room is full. Up to ${maxPeers} people can join a room.`);
 		},
 		stopEvent(e) {
 			e.preventDefault();
