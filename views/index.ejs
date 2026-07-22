@@ -6,7 +6,7 @@
   <div class="wrap">
     <%- include('header'); -%>
     <h1>Ahey - a free video chat app for the web.</h1>
-    <div class="row">
+    <section>
       <p>
         Ahey is a frictionless, peer-to-peer video conferencing app you can use right in your browser - no sign-ups,
         no downloads, 100% free.
@@ -14,7 +14,7 @@
       <p>
         Just share your room URL with friends and connect instantly.
       </p>
-    </div>
+    </section>
 
     <section>
       <div id="roombox" class="flex">
@@ -24,31 +24,39 @@
       </div>
       <div class="small light">Entering a room id is optional - click "Start" to generate a random room. Start the room id with "@" make it public and discoverable by others.</div>
       <br />
-      <div><a href="/public"><strong>Find public rooms</strong></a> to meet random people.</div>
-      <br />
     </section>
 
-    <div class="spacer"></div>
-    <hr />
-    <div class="spacer"></div>
+    <section>
+      <a href="/public" class="public-cta flex">
+        <span class="flex-1">
+          <strong>Find public rooms</strong>
+          <div class="small light">Meet random people in open, discoverable rooms.</div>
+        </span>
+        <span class="arrow">&rarr;</span>
+      </a>
+    </section>
 
     <section>
       <h2>Frequently Asked Questions</h2>
 
       <h3>What is a room?</h3>
-      <p>A room is a chat space you access by visiting a unique link like ahey.net/room. Just click the link and you join the video call right away.</p>
+      <p>A room is a chat space you access by visiting a unique link like <em>ahey.net/room</em>. Just click the link and you join the video call right away.</p>
 
       <h3>What is a private room?</h3>
       <p>All rooms are private by default. This means only people you share the link with can find and join your room. However, if you use an easy-to-guess name, someone might randomly find it. To keep it truly private, use a random name like "81df86c0-6fb5-4bf3-b6e8-14f5d530edad".</p>
 
       <h3>What is a public room?</h3>
-      <p>Public rooms are rooms that start with "@". Anyone can discover these rooms by visiting ahey.net/public and browsing the list.</p>
+      <p>Public rooms are rooms that start with "@". Anyone can discover these rooms by visiting <a href="/public">ahey.net/public</a> and browsing the list.</p>
 
       <h3>Is there a maximum number of people who can join a room?</h3>
       <p>Yes. A maximum of 4 people can be in a room at the same time.</p>
 
       <h3>Why is there a 4-person limit?</h3>
       <p>Ahey connects everyone directly to each other instead of going through a central server. With 4 people, your device is sending and receiving video from 3 other people at the same time. Adding more people would make it too slow and cause quality problems.</p>
+
+      <h3>How do I leave a room?</h3>
+      <p>Simply close the browser tab to leave the room immediately.</p>
+
       <div class="spacer"></div>
     </section>
 

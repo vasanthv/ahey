@@ -30,6 +30,9 @@ h4 {
 	font-style: italic;
 	font-weight: 500;
 }
+section {
+	margin: 2rem 0rem;
+}
 hr {
 	border-top: 1px solid var(--text);
 	height: 1px;
@@ -176,4 +179,21 @@ footer a {
 	border: 2px solid var(--text);
 	margin-left: 1rem;
 	border-radius: 0.5rem;
+}
+.public-cta {
+	text-decoration: none;
+	border: 2px solid var(--text);
+	border-radius: 0.5rem;
+	padding: 0.75rem 1rem;
+	box-sizing: border-box;
+	transition: background-color 0.15s ease;
+}
+.public-cta:hover,
+.public-cta:active {
+	background-color: rgba(128, 128, 128, 0.2);
+}
+.public-cta .arrow {
+	font-size: 1.5rem;
+	opacity: 0.6;
+	padding-left: 1rem;
 }
