@@ -251,19 +251,15 @@
 #extra,
 #chats {
 	position: fixed;
-	bottom: 5rem;
+	bottom: 3.5rem;
 	z-index: 50;
-	width: calc(100% - 2rem);
-	max-width: 320px;
 	margin: 0px;
 	box-sizing: border-box;
-	background: var(--background);
-	border: 2px solid var(--border);
-	border-radius: 0.5rem;
 	overflow: hidden;
 }
 #extra {
 	right: 1rem;
+	overflow: visible;
 }
 #chats {
 	left: 1rem;
@@ -274,17 +270,21 @@
 	list-style: none;
 }
 #extra ul li {
-	padding: 0.5rem 0.75rem;
-	border-radius: 0.25rem;
+	padding: 0.5rem 1rem;
+	border-radius: 2rem;
+	background: var(--background);
+	margin: 0.5rem 0px;
+	box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
 }
 #extra ul li.action {
 	cursor: pointer;
 }
 #extra ul li.action.red {
-	color: var(--red);
+	background-color: var(--red);
+	color: var(--background);
 }
 #extra ul li.action:hover {
-	background: var(--tile);
+	opacity: 0.8;
 }
 #extra ul li i {
 	margin-right: 0.5rem;
