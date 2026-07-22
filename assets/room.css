@@ -255,7 +255,6 @@
 	z-index: 50;
 	margin: 0px;
 	box-sizing: border-box;
-	overflow: hidden;
 }
 #extra {
 	right: 1rem;
@@ -290,21 +289,25 @@
 	margin-right: 0.5rem;
 }
 #chats #scroll {
-	max-height: 50vh;
+	max-height: 80vh;
 	overflow-y: auto;
 }
 #chats .chat {
 	padding: 0.75rem;
 	line-height: 1.4;
 	font-size: 0.9rem;
-	border-bottom: 1px solid var(--border);
-}
-#chats .chat:last-child {
-	border-bottom: none;
+	box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+	border-radius: 1rem;
+	background: var(--background);
+	margin-bottom: 1rem;
+	max-width: 320px;
+	box-sizing: border-box;
 }
 #chats .chat.composer {
-	border-top: 1px solid var(--border);
-	background: var(--tile);
+	border-radius: 1rem;
+	background: var(--background);
+	box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+	box-sizing: border-box;
 }
 #chats .chat .name {
 	font-weight: bold;
@@ -324,4 +327,11 @@
 	padding: 0px;
 	resize: none;
 	height: 3rem;
+}
+#chats .chat button {
+	background-color: var(--text);
+	color: var(--background);
+	padding: 0.5rem;
+	border: 1px solid var(--text);
+	border-radius: 0.5rem;
 }

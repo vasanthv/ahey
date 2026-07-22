@@ -5,6 +5,9 @@
 // Matches the signalling server's cap. The grid always shows this many tiles.
 const MAX_PARTICIPANTS = 4;
 
+// Longest chat message that can be sent, enforced on the input and on send.
+const MAX_CHAT_LENGTH = 320;
+
 // eslint-disable-next-line no-unused-vars
 const App = Vue.createApp({
 	data() {
@@ -34,6 +37,7 @@ const App = Vue.createApp({
 			chatEnabled,
 			chats: [],
 			chatMessage: "",
+			maxChatLength: MAX_CHAT_LENGTH,
 			showChat: false,
 			showExtraControls: false,
 			toast: [{ type: "", message: "" }],
@@ -432,7 +436,7 @@ const App = Vue.createApp({
 			if (!this.chatMessage.length) return;
 
 			if (Object.keys(this.peers).length > 0) {
-				this.sendDataMessage("chat", this.chatMessage);
+				this.sendDataMessage("chat", this.chatMessage.slice(0, MAX_CHAT_LENGTH));
 				this.chatMessage = "";
 			} else {
 				alert("No peers in the room");

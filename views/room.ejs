@@ -93,7 +93,10 @@
           </div>
 
           <div class="chat composer">
-            <textarea v-model="chatMessage" rows="1" v-on:keydown.enter="sendChat" placeholder="Enter your message"></textarea>
+            <div class="flex">
+              <textarea v-model="chatMessage" rows="1" v-on:keydown.enter="sendChat" placeholder="Enter your message" class="flex-1" v-bind:maxlength="maxChatLength"></textarea>
+              <button v-on:click="sendChat">Send</button>
+            </div>
           </div>
         </section>
 
