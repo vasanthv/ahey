@@ -14,6 +14,10 @@ const peers = Object.create(null);
 
 const has = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
 
+// Everyone connects to everyone else, so each extra peer costs every other peer
+// another upload and download stream. Four is where that stays workable.
+const MAX_PEERS_PER_ROOM = 4;
+
 const signallingServer = (socket) => {
 	// The rooms this socket has joined. Kept here rather than on the socket:
 	// socket.io defines its own read-only `socket.rooms` getter.
@@ -37,6 +41,11 @@ const signallingServer = (socket) => {
 
 		// Already Joined
 		if (has(joinedRooms, room)) return;
+
+		// Turn away anyone past the cap, and tell them why.
+		if (has(peers, room) && Object.keys(peers[room]).length >= MAX_PEERS_PER_ROOM) {
+			return socket.emit("roomFull", { room, maxPeers: MAX_PEERS_PER_ROOM });
+		}
 
 		if (!has(rooms, room)) rooms[room] = Object.create(null);
 

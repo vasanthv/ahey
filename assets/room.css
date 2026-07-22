@@ -181,15 +181,6 @@
 	grid-column: 1 / -1;
 	max-width: 50%;
 }
-#videos.layout-5,
-#videos.layout-6 {
-	grid-template-columns: 1fr 1fr 1fr;
-	grid-template-rows: 1fr 1fr;
-}
-#videos.layout-7-plus {
-	grid-template-columns: repeat(4, 1fr);
-	grid-auto-rows: auto;
-}
 #videos .video {
 	position: relative;
 	overflow: hidden;
@@ -364,14 +355,5 @@
 	#videos.layout-4 {
 		grid-template-columns: 1fr 1fr;
 		grid-template-rows: 1fr 1fr;
-	}
-	#videos.layout-5,
-	#videos.layout-6 {
-		grid-template-columns: 1fr 1fr 1fr;
-		grid-template-rows: 1fr 1fr;
-	}
-	#videos.layout-7-plus {
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: auto;
 	}
 }

@@ -50,13 +50,8 @@ const App = Vue.createApp({
 		videoLayoutClass() {
 			const totalParticipants = this.peersArray.length + 1; // +1 for self
 
-			if (totalParticipants === 1) return "layout-1";
-			if (totalParticipants === 2) return "layout-2";
-			if (totalParticipants === 3) return "layout-3";
-			if (totalParticipants === 4) return "layout-4";
-			if (totalParticipants === 5) return "layout-5";
-			if (totalParticipants === 6) return "layout-6";
-			return "layout-7-plus";
+			// The signalling server caps a room at 4, so 4 is the widest layout.
+			return "layout-" + Math.min(totalParticipants, 4);
 		},
 	},
 	watch: {
