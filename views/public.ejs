@@ -14,9 +14,14 @@
 
     <div class="row" id="public-rooms" v-cloak>
       <ul class="rooms" v-if="rooms.length">
-        <li class="flex" v-for="room in rooms" v-bind:key="room.room">
-          <a class="flex-1" v-bind:href="'/' + room.room">{{room.room}}</a>
-          <span class="small light">{{room.peerCount}} {{room.peerCount === 1 ? "person" : "people"}}</span>
+        <li class="room" v-for="room in rooms" v-bind:key="room.room">
+          <a class="flex" v-bind:href="'/' + room.room">
+            <div class="flex-1">
+              <div class="name">{{room.room}}</div>
+              <span class="small light">{{room.peerCount}} {{room.peerCount === 1 ? "person" : "people"}}</span>
+            </div>
+            <div class="arrow">&rsaquo;</div>
+          </a>
         </li>
       </ul>
 

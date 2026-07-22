@@ -89,6 +89,7 @@ footer a {
 .flex {
 	display: flex;
 	justify-content: center;
+	align-items: center;
 }
 .flex .flex-1 {
 	flex: 1;
@@ -109,14 +110,22 @@ footer a {
 	align-items: center;
 	gap: 1rem;
 	padding: 0.5rem 0px;
-	border-bottom: 1px solid rgba(128, 128, 128, 0.3);
 }
 .rooms li a {
 	text-decoration: none;
+	padding: 0.5rem;
+	border-radius: 1rem;
 }
 .rooms li a:hover,
 .rooms li a:active {
-	text-decoration: underline;
+	background-color: rgba(128, 128, 128, 0.2);
+}
+.rooms li a .name {
+	font-size: 1.25rem;
+}
+.rooms .arrow {
+	padding: 0rem 1rem;
+	font-size: 2rem;
 }
 
 #logo {
