@@ -4,7 +4,7 @@
 :root {
 	--tile: #f1f1f1;
 	--border: #e0e0e0;
-	--controls: rgba(39, 39, 39, 0.9);
+	--controls: rgba(39, 39, 39, 0.7);
 	--controls-active: #333333;
 
 	--red: #c0392b;
@@ -220,13 +220,14 @@
 	width: 3rem;
 	height: 3rem;
 	padding: 0px;
-	border: 2px solid var(--controls);
+	border: none;
 	border-radius: 50%;
 	color: #ffffff;
 	background: var(--controls);
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	font-size: 1.5rem;
 }
 .control:hover {
 	border-color: var(--controls-active);
