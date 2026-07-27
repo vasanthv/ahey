@@ -14,10 +14,6 @@ Ahey is built on WebRTC, enabling peer-to-peer video, audio, and text communicat
 
 ---
 
-### Wiki
-
-Please refer [wiki page](https://github.com/vasanthv/ahey/wiki) for more documentation.
-
 ### Contributions
 
 Please refer <a href="https://github.com/vasanthv/ahey/blob/master/markdowns/CONTRIBUTIONS.md">CONTRIBUTIONS.md</a> for more info.
