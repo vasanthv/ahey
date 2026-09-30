@@ -1,6 +1,6 @@
 # Local deployment
 
-How to run Ahey on your own machine — natively with Node/npm, with a single
+How to run Veenew on your own machine — natively with Node/npm, with a single
 Docker container, or as the full app + coturn stack with Docker Compose.
 
 The app listens on **port 824** and is served at <http://localhost:824>.
@@ -12,6 +12,21 @@ The app listens on **port 824** and is served at <http://localhost:824>.
 > **TURN locally:** without `TURN_SECRET` set, the app serves a STUN-only ICE
 > config. That's enough for peers on the same network. Cross-NAT relay needs a
 > TURN server — run the full stack with Docker Compose (Option C below).
+
+### How rooms pick a topology
+
+Up to 4 people, a room is a peer-to-peer mesh. The 5th person to join moves the
+whole room to the mediasoup SFU (up to 12 people): every client builds its SFU
+connection first and only drops its mesh links once the SFU media is flowing.
+When a room shrinks to 3 people it goes back to mesh the same way, after
+`MESH_RETURN_DELAY_MS`. The gap between 4 and 3 is deliberate, so a room
+hovering around the limit does not keep switching.
+
+The SFU runs inside the app process and starts lazily, so mesh-only use needs no
+media ports. mediasoup needs its native worker binary: `npm install` downloads a
+prebuilt one, or compiles it (needs Python 3.10+, a C++ toolchain and make).
+The browser bundle of `mediasoup-client` is committed as `assets/mediasoup-client.js`;
+regenerate it with `npm run build:client` after upgrading that package.
 
 ---
 
@@ -38,6 +53,12 @@ that same URL in a second tab or browser to test a call.
 | `CORS_ORIGIN` | `http://localhost:824`      | Comma-separated allowed origins (Socket.IO)|
 | `TURN_SECRET` | *(unset → STUN only)*       | Shared secret for TURN credentials        |
 | `TURN_HOST`   | `localhost`                 | Hostname advertised in TURN URLs          |
+| `SFU_ANNOUNCED_IP` | `127.0.0.1`            | IP the SFU tells browsers to send media to |
+| `SFU_PORT`    | `44440`                     | First SFU media port (UDP+TCP, one per worker) |
+| `SFU_WORKERS` | CPU cores, max 4            | Number of mediasoup workers               |
+| `MESH_MAX_PEERS` / `SFU_MAX_PEERS` | `4` / `12` | Room size at which it leaves mesh / hard cap |
+| `MESH_RETURN_AT` | `3`                      | An SFU room returns to mesh at this many peers or fewer |
+| `MESH_RETURN_DELAY_MS` | `10000`            | How long a room must stay that small first |
 
 Example on a different port:
 
@@ -68,8 +89,8 @@ npm run docker
 That is equivalent to running the two commands manually:
 
 ```bash
-docker build -t ahey .
-docker run --rm -p 824:824 ahey
+docker build -t veenew .
+docker run --rm -p 824:824 veenew
 ```
 
 Then open <http://localhost:824>. Stop the container with **Ctrl-C** (the `--rm`
@@ -80,15 +101,15 @@ flag removes it on exit).
 ```bash
 docker run --rm -p 824:824 \
   -e CORS_ORIGIN=http://localhost:824 \
-  ahey
+  veenew
 ```
 
 ### Run in the background
 
 ```bash
-docker run -d --name ahey -p 824:824 ahey   # start detached
-docker logs -f ahey                          # follow logs
-docker stop ahey && docker rm ahey           # stop & remove
+docker run -d --name veenew -p 824:824 veenew   # start detached
+docker logs -f veenew                          # follow logs
+docker stop veenew && docker rm veenew           # stop & remove
 ```
 
 ---
@@ -137,6 +158,9 @@ docker compose down              # stop & remove the containers
 - `coturn` uses **host networking**, so the TURN ports bind directly on the host:
   `3478` + `5349` (TCP+UDP) and the UDP relay range `49160–49200`. Open these in
   your firewall.
+- The app container publishes the SFU media ports `44440–44443` (UDP **and** TCP).
+  Open them in your firewall too, and set `EXTERNAL_IP` to the droplet's public
+  IP: the SFU announces it to browsers, and media will not flow if it is wrong.
 - Caddy needs `DOMAIN` to resolve to this host **before** it can obtain the TLS
   cert; coturn reuses that cert for `turns://<domain>:5349`.
 - The app mints short-lived TURN credentials from `TURN_SECRET`, and coturn

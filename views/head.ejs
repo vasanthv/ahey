@@ -5,11 +5,11 @@
   <meta name="keywords" content="group video chat, video communication, multiparty video chat, video chat, webrtc, peer to peer, p2p" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="application-name" content="Ahey" />
+  <meta name="application-name" content="Veenew" />
   <meta name="theme-color" content="#000000" />
 
   <!-- Meta data for link fetching -->
-  <meta property="og:title" content="Ahey" />
+  <meta property="og:title" content="Veenew" />
   <meta property="og:description" content="A free video chat for the web. No sign ups. No downloads. 100% free." />
 
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -19,7 +19,7 @@
 
   <link rel="stylesheet" href="/style.css" />
 
-  <% if(page==="room" || page==="public" ) { %>
+  <% if(page==="room" ) { %>
   <script defer src="/vue.global.prod.js"></script>
   <% } %>
 
@@ -27,14 +27,16 @@
   <link rel="stylesheet" href="/room.css" />
   <script defer src="/socket.io/socket.io.js"></script>
   <script defer src="/ice-config.js"></script>
+  <script defer src="/mediasoup-client.js"></script>
+  <script defer src="/sfu.js"></script>
   <script defer src="/peer.js"></script>
   <script defer src="/room.js"></script>
   <% } %>
 
-  <title>Ahey / <%= title %></title>
+  <title>Veenew / <%= title %></title>
 
   <% if(process.env.NODE_ENV === "production") { %>
   <!-- A privacy first web analytics-->
-  <script async src="https://cabin.ahey.net/hello.js"></script>
+  <script async src="https://cabin.veenew.com/hello.js"></script>
   <% } %>
 </head>

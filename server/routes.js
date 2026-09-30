@@ -1,5 +1,5 @@
-const { isValidRoomName, isPublicRoomName, randomRoomName, randomPublicRoomName, unusedRoomName } = require("./utils");
-const { getPublicRooms, isRoomLive } = require("./signalling-server");
+const { isValidRoomName, randomRoomName, unusedRoomName } = require("./utils");
+const { isRoomLive } = require("./signalling-server");
 
 const router = require("express").Router();
 
@@ -15,23 +15,6 @@ router.get("/", (req, res) => res.render("index", { page: "index", title: "A fre
 router.get("/random", (req, res) => {
 	const room = unusedRoomName(randomRoomName, isRoomLive);
 	res.redirect(`/${room}`);
-});
-
-// Route: Bounce to a fresh, empty public room with a name worth saying out loud.
-router.get("/@random", (req, res) => {
-	const room = unusedRoomName(randomPublicRoomName, (name) => isRoomLive(`@${name}`));
-	res.redirect(`/@${room}`);
-});
-
-// Route: Public rooms page. Rooms whose id starts with "@" are discoverable here.
-router.get("/public", (req, res) =>
-	res.render("public", { page: "public", title: "Public rooms", rooms: getPublicRooms() })
-);
-
-// Route: Public rooms as JSON, used by the /public page to keep the list fresh.
-router.get("/public.json", (req, res) => {
-	res.set("Cache-Control", "no-store");
-	res.json({ rooms: getPublicRooms() });
 });
 
 // MIddleware: Static views (terms, privacy, etc.)
@@ -50,7 +33,7 @@ router.get("/:room", (req, res) => {
 		return res.status(400).render("invalid", { page: "invalid-room", title: "Invalid room" });
 	}
 
-	res.render("room", { page: "room", title: room, isPublic: isPublicRoomName(room) });
+	res.render("room", { page: "room", title: room });
 });
 
 // Route: Catch-all for 404 errors

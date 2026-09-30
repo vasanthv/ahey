@@ -1,5 +1,5 @@
 {
-	"name": "ahey",
+	"name": "veenew",
 	"version": "2.0.11",
 	"description": "A free group video conference app for the web. No sign ups. No downloads.",
 	"main": "init.js",
@@ -7,20 +7,23 @@
 		"start": "node init.js",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"format:ejs": "prettier --write \"views/**/*.ejs\"",
-		"docker": "docker build -t ahey . && docker run -p 824:824 ahey"
+		"docker": "docker build -t veenew . && docker run -p 824:824 veenew",
+		"build:client": "esbuild client/mediasoup-entry.js --bundle --minify --format=iife --target=es2020 --outfile=assets/mediasoup-client.js"
 	},
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
 		"ejs": "^3.1.10",
 		"express": "^4.19.2",
+		"mediasoup": "^3.27.1",
+		"mediasoup-client": "^3.24.3",
 		"socket.io": "^4.7.5",
-		"unique-names-generator": "^4.7.1",
 		"vue": "^3.4.31"
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3.1.0",
 		"@eslint/js": "^9.14.0",
+		"esbuild": "^0.28.2",
 		"eslint-config-prettier": "^9.1.0",
 		"globals": "^15.12.0",
 		"prettier": "3.4.2"
@@ -41,5 +44,9 @@
 				}
 			}
 		]
+	},
+	"allowScripts": {
+		"mediasoup@3.27.1": true,
+		"esbuild@0.28.2": true
 	}
 }

@@ -1,9 +1,10 @@
-/* globals Vue */
+/* globals Vue, Sfu */
 
 "use strict";
 
-// Matches the signalling server's cap. The grid always shows this many tiles.
-const MAX_PARTICIPANTS = 4;
+// The grid always has at least this many tiles, with empty seats holding their
+// place. Bigger rooms (the SFU takes up to 12) grow the grid instead.
+const MIN_TILES = 4;
 
 // Longest chat message that can be sent, enforced on the input and on send.
 const MAX_CHAT_LENGTH = 320;
@@ -33,7 +34,7 @@ const App = Vue.createApp({
 			screenShareStream: null,
 			isScreenSharing: false,
 			peers: {},
-			dataChannels: {},
+			topology: null, // "mesh" or "sfu", as chosen by the server for this room
 			chatEnabled,
 			chats: [],
 			chatMessage: "",
@@ -54,10 +55,21 @@ const App = Vue.createApp({
 		screenShareSupported() {
 			return navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia;
 		},
+		gridSize() {
+			const tiles = Math.max(MIN_TILES, this.peersArray.length + 1); // +1 for self
+			const columns = tiles <= 4 ? 2 : 3;
+			return { columns, rows: Math.ceil(tiles / columns) };
+		},
+		gridStyle() {
+			return {
+				gridTemplateColumns: `repeat(${this.gridSize.columns}, 1fr)`,
+				gridTemplateRows: `repeat(${this.gridSize.rows}, 1fr)`,
+			};
+		},
 		emptySlots() {
 			const totalParticipants = this.peersArray.length + 1; // +1 for self
 
-			return Math.max(0, MAX_PARTICIPANTS - totalParticipants);
+			return Math.max(0, this.gridSize.columns * this.gridSize.rows - totalParticipants);
 		},
 	},
 	watch: {
@@ -109,48 +121,12 @@ const App = Vue.createApp({
 				}
 			}
 		},
-		replaceMediaTrack(newTrack, kind) {
-			const getSendersKind = kind;
-			Object.keys(this.peers).forEach((peerId) => {
-				const peerConnection = this.peers[peerId].rtc;
-				const senders = peerConnection.getSenders();
-				const sender = senders.find((s) => s.track && s.track.kind === getSendersKind);
-				if (sender) {
-					sender.replaceTrack(newTrack);
-				} else {
-					peerConnection.addTrack(newTrack, this.localMediaStream);
-					this.triggerRenegotiation(peerId);
-				}
-			});
-			if (this.localMediaStream) {
-				const getTracks = kind === "audio" ? "getAudioTracks" : "getVideoTracks";
-				const oldTrack = this.localMediaStream[getTracks]()[0];
-				if (oldTrack) this.localMediaStream.removeTrack(oldTrack);
-				this.localMediaStream.addTrack(newTrack);
-			}
-		},
 		removeMediaTrack(kind) {
 			// kind: "video" or "audio"
 			const blankTrack = this.getBlankTrack(kind);
 			if (!blankTrack) return;
 
-			// Replace track in all peer connections
-			Object.keys(this.peers).forEach((peerId) => {
-				const peerConnection = this.peers[peerId].rtc;
-				const senders = peerConnection.getSenders();
-				const sender = senders.find((s) => s.track && s.track.kind === kind);
-				if (sender) {
-					sender.replaceTrack(blankTrack);
-				}
-			});
-
-			// Replace in localMediaStream
-			if (this.localMediaStream) {
-				const getTracks = kind === "audio" ? "getAudioTracks" : "getVideoTracks";
-				const oldTrack = this.localMediaStream[getTracks]()[0];
-				if (oldTrack) this.localMediaStream.removeTrack(oldTrack);
-				this.localMediaStream.addTrack(blankTrack);
-			}
+			this.replaceOutgoingTrack(kind, blankTrack, false);
 		},
 		async triggerRenegotiation(peerId) {
 			try {
@@ -171,58 +147,38 @@ const App = Vue.createApp({
 			}
 		},
 		replaceVideoTrack(newVideoTrack) {
-			// Replace video track in all peer connections
-			Object.keys(this.peers).forEach((peerId) => {
-				const peerConnection = this.peers[peerId].rtc;
-				const senders = peerConnection.getSenders();
-
-				const videoSender = senders.find((sender) => sender.track && sender.track.kind === "video");
-
-				if (videoSender) {
-					// Replace existing video track
-					videoSender.replaceTrack(newVideoTrack);
-				} else {
-					// No existing video sender, add new video track
-					peerConnection.addTrack(newVideoTrack, this.localMediaStream);
-					// Trigger renegotiation for this peer
-					this.triggerRenegotiation(peerId);
-				}
-			});
-
-			// Update local video element
-			if (this.localMediaStream) {
-				const oldVideoTrack = this.localMediaStream.getVideoTracks()[0];
-				if (oldVideoTrack) {
-					this.localMediaStream.removeTrack(oldVideoTrack);
-				}
-				this.localMediaStream.addTrack(newVideoTrack);
-			}
+			this.replaceOutgoingTrack("video", newVideoTrack);
 		},
 		replaceAudioTrack(newAudioTrack) {
-			// Replace audio track in all peer connections
+			this.replaceOutgoingTrack("audio", newAudioTrack);
+		},
+		// Swaps the track we send, on every path it is currently going out on: the
+		// mesh connections and, when the room is on it, the SFU. Both can be live at
+		// once while a room switches between them.
+		replaceOutgoingTrack(kind, newTrack, addIfMissing = true) {
 			Object.keys(this.peers).forEach((peerId) => {
 				const peerConnection = this.peers[peerId].rtc;
-				const senders = peerConnection.getSenders();
-				const audioSender = senders.find((sender) => sender.track && sender.track.kind === "audio");
+				if (!peerConnection) return; // this peer is reached through the SFU
 
-				if (audioSender) {
-					// Replace existing audio track
-					audioSender.replaceTrack(newAudioTrack);
-				} else {
-					// No existing audio sender, add new audio track
-					peerConnection.addTrack(newAudioTrack, this.localMediaStream);
-					// Trigger renegotiation for this peer
+				const sender = peerConnection.getSenders().find((s) => s.track && s.track.kind === kind);
+
+				if (sender) {
+					sender.replaceTrack(newTrack);
+				} else if (addIfMissing) {
+					// No sender for this kind yet, so add one and renegotiate
+					peerConnection.addTrack(newTrack, this.localMediaStream);
 					this.triggerRenegotiation(peerId);
 				}
 			});
 
-			// Update local media stream
+			Sfu.replaceTrack(kind, newTrack, addIfMissing).catch((error) => console.error("SFU replaceTrack failed", error));
+
+			// Update the local media stream (also what the self tile shows)
 			if (this.localMediaStream) {
-				const oldAudioTrack = this.localMediaStream.getAudioTracks()[0];
-				if (oldAudioTrack) {
-					this.localMediaStream.removeTrack(oldAudioTrack);
-				}
-				this.localMediaStream.addTrack(newAudioTrack);
+				const getTracks = kind === "audio" ? "getAudioTracks" : "getVideoTracks";
+				const oldTrack = this.localMediaStream[getTracks]()[0];
+				if (oldTrack) this.localMediaStream.removeTrack(oldTrack);
+				this.localMediaStream.addTrack(newTrack);
 			}
 		},
 		async startScreenShare() {
@@ -362,16 +318,12 @@ const App = Vue.createApp({
 				}
 			});
 
-			// Clean up data channels
-			Object.keys(this.dataChannels).forEach((peerId) => {
-				if (this.dataChannels[peerId]) {
-					this.dataChannels[peerId].close();
-				}
-			});
+			// Leave the SFU, if the room was on it
+			Sfu.close();
 
 			// Reset call state
 			this.peers = {};
-			this.dataChannels = {};
+			this.topology = null;
 			this.callInitiated = false;
 			this.chats = [];
 			this.showChat = false;
@@ -443,25 +395,28 @@ const App = Vue.createApp({
 			}
 		},
 		sendDataMessage(key, value) {
-			const date = new Date().toISOString();
-			const dataMessage = { type: key, name: this.name, peerId: this.peerId, message: value, date };
-
-			switch (key) {
-				case "chat":
-					this.chats.push(dataMessage);
-					break;
-				default:
-					break;
+			// Chat and name changes go through the signalling server rather than
+			// per-peer data channels, so they work the same on the mesh and the SFU.
+			if (key === "chat") {
+				this.chats.push({
+					type: key,
+					name: this.name,
+					peerId: this.peerId,
+					message: value,
+					date: new Date().toISOString(),
+				});
 			}
 
-			Object.keys(this.dataChannels).map((peer_id) => this.dataChannels[peer_id].send(JSON.stringify(dataMessage)));
+			if (window.signalingSocket) {
+				window.signalingSocket.emit("roomMessage", { room: this.roomId, type: key, message: value });
+			}
 		},
 		setTalkingPeer(peerId, isTalking) {
 			if (this.peers[peerId] && this.peers[peerId].data.isTalking !== isTalking) {
 				this.peers[peerId].data.isTalking = isTalking;
 			}
 		},
-		handleIncomingDataChannelMessage(dataMessage) {
+		handleIncomingRoomMessage(dataMessage) {
 			if (!this.peers[dataMessage.peerId]) return;
 			switch (dataMessage.type) {
 				case "peerName":

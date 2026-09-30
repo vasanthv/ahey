@@ -1,4 +1,4 @@
-Ahey can be embedded in any webpage using an `<iframe>`.
+Veenew can be embedded in any webpage using an `<iframe>`.
 
 ---
 
@@ -8,7 +8,7 @@ Replace `your-room-here` with the room name you want to embed:
 
 ```html
 <iframe
-	src="https://ahey.ney/your-room-here?name=John"
+	src="https://veenew.com/your-room-here?name=John"
 	width="100%"
 	height="600"
 	style="border:0;"

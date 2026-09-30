@@ -1,12 +1,17 @@
 services:
   # ----------------------------------------------------------------------------
-  # Ahey app (Node/Express + socket.io signalling). Internal only; Caddy fronts it.
+  # Veenew app (Node/Express + socket.io signalling). Internal only; Caddy fronts it.
   # ----------------------------------------------------------------------------
   app:
     build: .
     restart: unless-stopped
     expose:
       - "824"
+    # mediasoup media ports: one UDP+TCP port per worker (SFU_PORT + worker index,
+    # at most 4 workers). Open these in the droplet firewall.
+    ports:
+      - "44440-44443:44440-44443/udp"
+      - "44440-44443:44440-44443/tcp"
     environment:
       NODE_ENV: production
       PORT: 824
@@ -16,6 +21,8 @@ services:
       TURN_HOST: ${DOMAIN}
       TURN_SECRET: ${TURN_SECRET}
       TURN_TTL: ${TURN_TTL:-86400}
+      # mediasoup SFU wiring — the public IP clients must send media to
+      SFU_ANNOUNCED_IP: ${EXTERNAL_IP}
     networks:
       - web
 

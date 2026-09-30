@@ -47,13 +47,10 @@
         <button class="join" v-on:click="initiateCall">Join /<%= title %></button>
 
         <div class="terms">By proceeding you accept our <a href="/terms" target="_blank">terms</a></div>
-        <% if (isPublic) { %>
-        <div class="terms">This is a public room. By joining you confirm you are 18 or older.</div>
-        <% } %>
       </section>
 
       <section v-if="callInitiated">
-        <div id="videos">
+        <div id="videos" v-bind:style="gridStyle">
           <div class="video self">
             <video v-bind:src-object.prop.camel="localMediaStream" autoplay muted playsinline></video>
             <div class="meta">{{name}} (You)</div>

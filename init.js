@@ -45,6 +45,6 @@ app.use("/", routes);
 
 // Start the server and log status
 server.listen(PORT, null, () => {
-	console.log("Ahey server started");
+	console.log("Veenew server started");
 	console.log({ port: PORT, node_version: process.versions.node });
 });

@@ -2,7 +2,7 @@ name: Deploy to droplet
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   workflow_dispatch: {} # allow manual runs from the Actions tab
 
 concurrency:
@@ -24,6 +24,6 @@ jobs:
             set -euo pipefail
             cd "${{ secrets.DEPLOY_PATH }}"
             git fetch --all
-            git reset --hard origin/master     # match the pushed commit exactly (.env is untracked, survives)
+            git reset --hard origin/main       # match the pushed commit exactly (.env is untracked, survives)
             docker compose up -d --build
             docker image prune -f
